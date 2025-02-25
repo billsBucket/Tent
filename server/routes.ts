@@ -7,8 +7,8 @@ import { insertBookingSchema } from "@shared/schema";
 export async function registerRoutes(app: Express): Promise<Server> {
   setupAuth(app);
 
-  app.get("/api/babysitters", (req, res) => {
-    const babysitters = storage.getBabysitters();
+  app.get("/api/babysitters", async (req, res) => {
+    const babysitters = await storage.getBabysitters();
     res.json(babysitters);
   });
 

@@ -12,6 +12,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Loader2 } from "lucide-react";
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css';
 
 export default function AuthPage() {
   const [, setLocation] = useLocation();
@@ -178,7 +180,18 @@ export default function AuthPage() {
                     <FormItem>
                       <FormLabel>Phone Number</FormLabel>
                       <FormControl>
-                        <Input type="tel" placeholder="Enter phone number" {...field} />
+                        <div className="phone-input-container">
+                          <PhoneInput
+                            country={'us'}
+                            value={field.value}
+                            onChange={phone => field.onChange(phone)}
+                            enableSearch={true}
+                            inputClass="!w-full !h-10 !rounded-md !px-3 !py-2 !bg-background !border !border-input"
+                            buttonClass="!border !border-input !rounded-l-md !bg-background"
+                            dropdownClass="!bg-background !border !border-input"
+                            searchClass="!bg-background !text-foreground"
+                          />
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>

@@ -41,7 +41,7 @@ export default function OnboardingPage() {
     <MobileLayout className="flex flex-col bg-black">
       <div className="flex justify-between items-center mb-8">
         <img 
-          src="/attached_assets/2.png" 
+          src="/logo-with-name.png" 
           alt="Tent Logo" 
           className="h-8"
         />

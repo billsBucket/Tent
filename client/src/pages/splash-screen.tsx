@@ -15,21 +15,29 @@ export default function SplashScreen() {
   }, [setLocation]);
 
   return (
-    <MobileLayout className="flex items-center justify-center bg-black">
+    <div className="fixed inset-0 bg-black flex items-center justify-center">
       <motion.div
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        transition={{ duration: 0.5 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
         className="text-center"
       >
         <motion.img 
-          src="/attached_assets/1.png"
+          src="/logo.png"
           alt="Tent Logo"
-          className="w-24 h-24 mx-auto"
-          animate={{ y: [0, -10, 0] }}
-          transition={{ duration: 1.5, repeat: Infinity }}
+          className="w-32 h-32 md:w-40 md:h-40"
+          animate={{ 
+            y: [0, -20, 0],
+            scale: [1, 1.1, 1]
+          }}
+          transition={{ 
+            duration: 2,
+            repeat: Infinity,
+            repeatType: "reverse",
+            ease: "easeInOut"
+          }}
         />
       </motion.div>
-    </MobileLayout>
+    </div>
   );
 }
