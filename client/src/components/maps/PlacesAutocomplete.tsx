@@ -22,7 +22,7 @@ export default function PlacesAutocomplete({ onPlaceSelect, placeholder = "Enter
   const sessionToken = useRef<google.maps.places.AutocompleteSessionToken | null>(null);
 
   useEffect(() => {
-    if (window.google) {
+    if (window.google && window.google.maps) {
       autocompleteService.current = new google.maps.places.AutocompleteService();
       placesService.current = new google.maps.places.PlacesService(
         document.createElement('div')
@@ -38,7 +38,7 @@ export default function PlacesAutocomplete({ onPlaceSelect, placeholder = "Enter
     try {
       const response = await autocompleteService.current.getPlacePredictions({
         input,
-        sessionToken: sessionToken.current,
+        sessionToken: sessionToken.current || undefined,
         componentRestrictions: { country: 'us' },
         types: ['address', 'establishment', 'geocode']
       });
@@ -57,7 +57,7 @@ export default function PlacesAutocomplete({ onPlaceSelect, placeholder = "Enter
       {
         placeId: prediction.place_id,
         fields: ['formatted_address', 'geometry'],
-        sessionToken: sessionToken.current
+        sessionToken: sessionToken.current || undefined
       },
       (place, status) => {
         if (status === google.maps.places.PlacesServiceStatus.OK && place?.geometry?.location) {
