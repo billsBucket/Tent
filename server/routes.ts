@@ -4,9 +4,62 @@ import { setupAuth } from "./auth";
 import { storage } from "./storage";
 import { insertBookingSchema, insertVerificationSchema } from "@shared/schema";
 import { setupWebSocket } from "./socket";
+import multer from "multer";
+import axios from "axios";
+
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB limit
+  },
+});
 
 export async function registerRoutes(app: Express): Promise<Server> {
   setupAuth(app);
+
+  // ID Verification endpoint
+  app.post("/api/verify/id", upload.single("idImage"), async (req, res) => {
+    if (!req.file) {
+      return res.status(400).json({ message: "No image file provided" });
+    }
+
+    try {
+      const idAnalyzerResponse = await axios.post(
+        "https://api.idanalyzer.com",
+        {
+          apikey: process.env.ID_ANALYZER_API_KEY,
+          file: req.file.buffer.toString("base64"),
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const { data } = idAnalyzerResponse;
+
+      if (data.result) {
+        res.json({
+          verified: true,
+          documentType: data.result.type,
+          documentNumber: data.result.number,
+          expiryDate: data.result.expiry,
+        });
+      } else {
+        res.status(400).json({
+          verified: false,
+          message: "ID verification failed. Please try again with a clearer image.",
+        });
+      }
+    } catch (error) {
+      console.error("ID verification error:", error);
+      res.status(500).json({
+        verified: false,
+        message: "Error processing ID verification",
+      });
+    }
+  });
 
   app.get("/api/babysitters", async (req, res) => {
     const babysitters = await storage.getBabysitters();
@@ -49,7 +102,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(booking);
   });
 
-  // Verification endpoints
+  // Verifications endpoints
   app.post("/api/verifications", async (req, res) => {
     if (!req.isAuthenticated()) {
       return res.sendStatus(401);
@@ -63,10 +116,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
 
     const newVerification = await storage.createVerification(verification);
-
-    // Update user's verification status
     await storage.updateUserVerificationStatus(req.user!.id, "in_progress");
-
     res.status(201).json(newVerification);
   });
 
@@ -80,9 +130,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   const httpServer = createServer(app);
-
-  // Setup WebSocket server for real-time updates
   setupWebSocket(httpServer);
-
   return httpServer;
 }
