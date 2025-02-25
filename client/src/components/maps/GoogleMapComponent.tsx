@@ -24,7 +24,7 @@ interface MapProps {
 export default function GoogleMapComponent({ center = defaultCenter, markers = [], onLoad }: MapProps) {
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
-    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "",
+    googleMapsApiKey: "AIzaSyBXBrUDX9OBAAa9SjTfALgsjjKr5WL7H1A",
     libraries: ['places']
   });
 

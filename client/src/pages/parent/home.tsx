@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { motion } from "framer-motion";
-import { MobileLayout } from "@/components/layout/mobile-layout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -38,10 +37,18 @@ export default function ParentHome() {
     setLocation(`/parent/booking/${sitterId}?address=${encodeURIComponent(selectedAddress)}`);
   };
 
-  const babysitterMarkers = babysitters?.map(sitter => ({
-    position: { lat: 40.7128, lng: -74.0060 }, // TODO: Use actual babysitter locations
-    title: sitter.fullName
-  })) || [];
+  // Transform babysitter data to map markers
+  const babysitterMarkers = babysitters?.map(sitter => {
+    // In real app, use sitter's actual location from profileData
+    const randomOffset = () => (Math.random() - 0.5) * 0.01; // Small random offset for demo
+    return {
+      position: { 
+        lat: mapCenter.lat + randomOffset(), 
+        lng: mapCenter.lng + randomOffset() 
+      },
+      title: sitter.fullName
+    };
+  }) || [];
 
   return (
     <div className="h-screen flex flex-col">
@@ -103,6 +110,11 @@ export default function ParentHome() {
                             <Clock className="h-4 w-4 ml-2" />
                             <span>${sitter.profileData?.hourlyRate || "15"}/hr</span>
                           </div>
+                          {sitter.profileData?.experience && (
+                            <p className="text-sm text-muted-foreground mt-1">
+                              {sitter.profileData.experience}
+                            </p>
+                          )}
                         </div>
                         <Button
                           variant="default"

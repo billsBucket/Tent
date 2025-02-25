@@ -59,6 +59,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       ...req.body,
       userId: req.user!.id,
       status: "pending",
+      submittedAt: new Date(),
     });
 
     const newVerification = await storage.createVerification(verification);
@@ -80,7 +81,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   const httpServer = createServer(app);
 
-  // Setup WebSocket server
+  // Setup WebSocket server for real-time updates
   setupWebSocket(httpServer);
 
   return httpServer;

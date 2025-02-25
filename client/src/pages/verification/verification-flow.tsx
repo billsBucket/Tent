@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useLocation } from "wouter";
 import { motion } from "framer-motion";
 import { useMutation } from "@tanstack/react-query";
@@ -15,7 +15,8 @@ import {
   CheckCircle,
   AlertCircle,
   ChevronRight,
-  Shield
+  Shield,
+  Loader2
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 
@@ -101,6 +102,14 @@ export default function VerificationFlow() {
   };
 
   const submitIdVerification = () => {
+    if (!idDetails.type || !idDetails.number || !idDetails.expiryDate) {
+      toast({
+        title: "Missing information",
+        description: "Please fill in all ID details",
+        variant: "destructive",
+      });
+      return;
+    }
     verificationMutation.mutate({
       type: "government_id",
       metadata: idDetails,
@@ -111,6 +120,12 @@ export default function VerificationFlow() {
     if (!user) return "/auth";
     return user.userType === "parent" ? "/parent/home" : "/babysitter/dashboard";
   };
+
+  useEffect(() => {
+    return () => {
+      stopCamera();
+    };
+  }, []);
 
   const renderStep = () => {
     switch (currentStep) {
@@ -216,6 +231,9 @@ export default function VerificationFlow() {
               onClick={submitIdVerification}
               disabled={verificationMutation.isPending}
             >
+              {verificationMutation.isPending ? (
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              ) : null}
               Submit ID Details
               <ChevronRight className="h-4 w-4 ml-2" />
             </Button>
@@ -256,6 +274,9 @@ export default function VerificationFlow() {
                 onClick={capturePhoto}
                 disabled={verificationMutation.isPending}
               >
+                {verificationMutation.isPending ? (
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                ) : null}
                 Take Photo
                 <Camera className="h-4 w-4 ml-2" />
               </Button>

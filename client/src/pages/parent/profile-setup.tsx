@@ -10,9 +10,10 @@ import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Trash2, Save } from "lucide-react";
+import { Plus, Trash2, Save, Upload } from "lucide-react";
 import { z } from "zod";
 import { apiRequest } from "@/lib/queryClient";
+import PlacesAutocomplete from "@/components/maps/PlacesAutocomplete";
 
 const childSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -25,6 +26,15 @@ const childSchema = z.object({
 const profileSchema = z.object({
   children: z.array(childSchema),
   address: z.string().min(1, "Address is required"),
+  location: z.object({
+    latitude: z.number(),
+    longitude: z.number(),
+  }),
+  governmentId: z.object({
+    type: z.string().min(1, "ID type is required"),
+    number: z.string().min(1, "ID number is required"),
+    expiryDate: z.string().min(1, "Expiry date is required"),
+  }),
 });
 
 type ProfileFormData = z.infer<typeof profileSchema>;
@@ -33,12 +43,15 @@ export default function ParentProfileSetup() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const [childrenCount, setChildrenCount] = useState(1);
+  const [selectedAddress, setSelectedAddress] = useState("");
 
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
       children: [{ name: "", age: 0, gender: "", allergies: "", specialNeeds: "" }],
       address: "",
+      location: { latitude: 0, longitude: 0 },
+      governmentId: { type: "", number: "", expiryDate: "" },
     },
   });
 
@@ -52,7 +65,7 @@ export default function ParentProfileSetup() {
         title: "Profile Updated",
         description: "Your profile has been successfully updated.",
       });
-      setLocation("/parent/home");
+      setLocation("/parent/verification");
     },
     onError: (error: Error) => {
       toast({
@@ -62,6 +75,16 @@ export default function ParentProfileSetup() {
       });
     },
   });
+
+  const handlePlaceSelect = ({ address, latitude, longitude }: { 
+    address: string; 
+    latitude: number; 
+    longitude: number 
+  }) => {
+    setSelectedAddress(address);
+    form.setValue("address", address);
+    form.setValue("location", { latitude, longitude });
+  };
 
   const addChild = () => {
     const children = form.getValues("children");
@@ -94,7 +117,7 @@ export default function ParentProfileSetup() {
       >
         <div className="text-center space-y-2">
           <h1 className="text-2xl font-bold">Complete Your Profile</h1>
-          <p className="text-muted-foreground">Add your family details to help us find the perfect babysitter</p>
+          <p className="text-muted-foreground">Add your family details and verification documents</p>
         </div>
 
         <Form {...form}>
@@ -206,15 +229,64 @@ export default function ParentProfileSetup() {
             </Card>
 
             <Card>
-              <CardContent className="p-6">
+              <CardContent className="p-6 space-y-4">
+                <h2 className="text-lg font-semibold">Home Address</h2>
+                <PlacesAutocomplete
+                  onPlaceSelect={handlePlaceSelect}
+                  placeholder="Enter your home address"
+                />
                 <FormField
                   control={form.control}
                   name="address"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Home Address</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="Enter your address" />
+                        <Input {...field} type="hidden" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="p-6 space-y-4">
+                <h2 className="text-lg font-semibold">Government ID</h2>
+                <FormField
+                  control={form.control}
+                  name="governmentId.type"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>ID Type</FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder="e.g., Driver's License, Passport" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="governmentId.number"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>ID Number</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="governmentId.expiryDate"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Expiry Date</FormLabel>
+                      <FormControl>
+                        <Input {...field} type="date" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -229,7 +301,7 @@ export default function ParentProfileSetup() {
               disabled={updateProfileMutation.isPending}
             >
               <Save className="h-4 w-4 mr-2" />
-              Save Profile
+              Save Profile and Continue to Verification
             </Button>
           </form>
         </Form>

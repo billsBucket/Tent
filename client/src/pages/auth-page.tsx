@@ -42,8 +42,12 @@ export default function AuthPage() {
 
   useEffect(() => {
     if (user) {
-      const redirectPath = user.userType === "parent" ? "/parent/home" : "/babysitter/dashboard";
-      setLocation(redirectPath);
+      if (!user.profileData?.children && user.userType === "parent") {
+        setLocation("/parent/profile-setup");
+      } else {
+        const redirectPath = user.userType === "parent" ? "/parent/home" : "/babysitter/dashboard";
+        setLocation(redirectPath);
+      }
     }
   }, [user, setLocation]);
 
@@ -68,8 +72,8 @@ export default function AuthPage() {
         className="space-y-6"
       >
         <div className="text-center space-y-2">
-          <h1 className="text-3xl font-bold">Welcome to Tent</h1>
-          <p className="text-muted-foreground">Trusted babysitting services</p>
+          <h1 className="text-3xl font-bold">Welcome to BabySitterGo</h1>
+          <p className="text-muted-foreground">Find trusted babysitters near you</p>
         </div>
 
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "login" | "register")}>
