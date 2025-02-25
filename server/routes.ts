@@ -61,6 +61,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Add after the ID verification endpoint
+  app.post("/api/verify/face", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.sendStatus(401);
+    }
+
+    const { imageData } = req.body;
+    if (!imageData) {
+      return res.status(400).json({ message: "No image data provided" });
+    }
+
+    try {
+      // Remove the data:image/jpeg;base64 prefix
+      const base64Image = imageData.split(',')[1];
+
+      // For now, we'll simulate face verification
+      // In production, integrate with a face verification service
+      const simulateVerification = () => {
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            resolve({
+              verified: true,
+              confidence: 0.98,
+              message: "Face verification successful"
+            });
+          }, 2000);
+        });
+      };
+
+      const verificationResult = await simulateVerification();
+      res.json(verificationResult);
+    } catch (error) {
+      console.error("Face verification error:", error);
+      res.status(500).json({
+        verified: false,
+        message: "Error processing face verification",
+      });
+    }
+  });
+
   app.get("/api/babysitters", async (req, res) => {
     const babysitters = await storage.getBabysitters();
     res.json(babysitters);
