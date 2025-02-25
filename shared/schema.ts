@@ -15,6 +15,13 @@ export const users = pgTable("users", {
     enum: ["pending", "in_progress", "approved", "rejected"]
   }).default("pending"),
   profileData: json("profile_data").$type<{
+    // Location Data
+    location?: {
+      address: string;
+      latitude: number;
+      longitude: number;
+      lastUpdated: string;
+    };
     // Verification Data
     governmentId?: {
       type: string;
@@ -43,17 +50,26 @@ export const users = pgTable("users", {
       status: "pending" | "verified" | "rejected";
       completedAt?: string;
     };
+    // Rating and Reviews
+    rating?: number;
+    totalRatings?: number;
+    reviews?: Array<{
+      userId: number;
+      rating: number;
+      comment: string;
+      createdAt: string;
+    }>;
   }>().default({}),
 });
 
 export const verifications = pgTable("verifications", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull(),
-  type: text("type", { 
-    enum: ["government_id", "face", "background_check"] 
+  type: text("type", {
+    enum: ["government_id", "face", "background_check"]
   }).notNull(),
-  status: text("status", { 
-    enum: ["pending", "in_progress", "approved", "rejected"] 
+  status: text("status", {
+    enum: ["pending", "in_progress", "approved", "rejected"]
   }).notNull(),
   submittedAt: timestamp("submitted_at").notNull(),
   processedAt: timestamp("processed_at"),

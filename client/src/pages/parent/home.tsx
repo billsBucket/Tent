@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { motion } from "framer-motion";
@@ -7,17 +8,24 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Search, Star, Clock } from "lucide-react";
+import { Search, Star, Clock, MapPin } from "lucide-react";
 import type { User } from "@shared/schema";
+import GoogleMapComponent from "@/components/maps/GoogleMapComponent";
+import PlacesAutocomplete from "@/components/maps/PlacesAutocomplete";
 
 export default function ParentHome() {
   const [, setLocation] = useLocation();
+  const [mapCenter, setMapCenter] = useState({
+    lat: 40.7128,
+    lng: -74.0060
+  });
+
   const { data: babysitters, isLoading, error } = useQuery<User[]>({
     queryKey: ["/api/babysitters"],
   });
 
-  const navigateToBabysitter = (id: number) => {
-    setLocation(`/parent/babysitter/${id}`);
+  const handlePlaceSelect = ({ latitude, longitude }: { latitude: number; longitude: number }) => {
+    setMapCenter({ lat: latitude, lng: longitude });
   };
 
   if (error) {
@@ -30,23 +38,40 @@ export default function ParentHome() {
     );
   }
 
+  const babysitterMarkers = babysitters?.map(sitter => ({
+    position: { lat: 40.7128, lng: -74.0060 }, // TODO: Use actual babysitter locations
+    title: sitter.fullName
+  })) || [];
+
   return (
     <MobileLayout>
       <div className="space-y-6">
         <div className="space-y-2">
           <h1 className="text-2xl font-bold">Find a Babysitter</h1>
-          <p className="text-muted-foreground">Browse trusted and verified babysitters</p>
+          <p className="text-muted-foreground">Find trusted babysitters near you</p>
         </div>
 
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input 
-            placeholder="Search babysitters..." 
-            className="pl-10"
+        <PlacesAutocomplete
+          onPlaceSelect={handlePlaceSelect}
+          placeholder="Where do you need a babysitter?"
+        />
+
+        <div className="h-[300px] rounded-lg overflow-hidden">
+          <GoogleMapComponent
+            center={mapCenter}
+            markers={babysitterMarkers}
           />
         </div>
 
         <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="font-semibold">Available Babysitters</h2>
+            <Button variant="outline" size="sm">
+              <MapPin className="h-4 w-4 mr-2" />
+              Near Me
+            </Button>
+          </div>
+
           {isLoading ? (
             Array(3).fill(0).map((_, i) => (
               <Card key={i}>
@@ -69,7 +94,7 @@ export default function ParentHome() {
               whileHover={{ scale: 1.02 }}
               transition={{ duration: 0.2 }}
             >
-              <Card 
+              <Card
                 className="cursor-pointer"
                 onClick={() => navigateToBabysitter(sitter.id)}
               >
