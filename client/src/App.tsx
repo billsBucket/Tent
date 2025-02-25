@@ -12,7 +12,8 @@ import VerificationFlow from "@/pages/verification/verification-flow";
 import ParentHome from "@/pages/parent/home";
 import ParentProfileSetup from "@/pages/parent/profile-setup";
 import BabysitterDashboard from "@/pages/babysitter/dashboard";
-import BabysitterDetail from "@/pages/parent/babysitter-detail";
+import BookingPage from "@/pages/parent/booking/[id]";
+import BookingTrackingPage from "@/pages/parent/booking/[id]/tracking";
 
 function Router() {
   return (
@@ -23,7 +24,8 @@ function Router() {
       <ProtectedRoute path="/verification" component={VerificationFlow} />
       <ProtectedRoute path="/parent/profile-setup" component={ParentProfileSetup} />
       <ProtectedRoute path="/parent/home" component={ParentHome} />
-      <ProtectedRoute path="/parent/babysitter/:id" component={BabysitterDetail} />
+      <ProtectedRoute path="/parent/booking/:id" component={BookingPage} />
+      <ProtectedRoute path="/parent/booking/:id/tracking" component={BookingTrackingPage} />
       <ProtectedRoute path="/babysitter/dashboard" component={BabysitterDashboard} />
       <Route component={NotFound} />
     </Switch>

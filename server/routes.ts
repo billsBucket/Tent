@@ -13,8 +13,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(babysitters);
   });
 
+  app.get("/api/babysitters/:id", async (req, res) => {
+    const babysitter = await storage.getUser(parseInt(req.params.id));
+    if (!babysitter || babysitter.userType !== "babysitter") {
+      return res.status(404).send("Babysitter not found");
+    }
+    res.json(babysitter);
+  });
+
   app.post("/api/bookings", async (req, res) => {
-    const booking = insertBookingSchema.parse(req.body);
+    if (!req.isAuthenticated()) {
+      return res.sendStatus(401);
+    }
+
+    const booking = insertBookingSchema.parse({
+      ...req.body,
+      parentId: req.user!.id,
+      status: "pending"
+    });
+
     const newBooking = await storage.createBooking(booking);
     res.status(201).json(newBooking);
   });
@@ -22,6 +39,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/bookings/:userId", async (req, res) => {
     const bookings = await storage.getUserBookings(parseInt(req.params.userId));
     res.json(bookings);
+  });
+
+  app.get("/api/bookings/:id", async (req, res) => {
+    const booking = await storage.getBooking(parseInt(req.params.id));
+    if (!booking) {
+      return res.status(404).send("Booking not found");
+    }
+    res.json(booking);
   });
 
   // Verification endpoints

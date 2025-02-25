@@ -11,6 +11,7 @@ export interface IStorage {
   updateUserVerificationStatus(userId: number, status: string): Promise<void>;
   getBabysitters(): Promise<User[]>;
   createBooking(booking: InsertBooking): Promise<Booking>;
+  getBooking(id: number): Promise<Booking | undefined>;
   getUserBookings(userId: number): Promise<Booking[]>;
   createVerification(verification: InsertVerification): Promise<Verification>;
   getUserVerifications(userId: number): Promise<Verification[]>;
@@ -80,6 +81,10 @@ export class MemStorage implements IStorage {
     const booking: Booking = { ...insertBooking, id };
     this.bookings.set(id, booking);
     return booking;
+  }
+
+  async getBooking(id: number): Promise<Booking | undefined> {
+    return this.bookings.get(id);
   }
 
   async getUserBookings(userId: number): Promise<Booking[]> {
