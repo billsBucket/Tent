@@ -12,13 +12,23 @@ import type { User } from "@shared/schema";
 
 export default function ParentHome() {
   const [, setLocation] = useLocation();
-  const { data: babysitters, isLoading } = useQuery<User[]>({
+  const { data: babysitters, isLoading, error } = useQuery<User[]>({
     queryKey: ["/api/babysitters"],
   });
 
   const navigateToBabysitter = (id: number) => {
     setLocation(`/parent/babysitter/${id}`);
   };
+
+  if (error) {
+    return (
+      <MobileLayout>
+        <div className="text-center p-4">
+          <p className="text-red-500">Failed to load babysitters. Please try again later.</p>
+        </div>
+      </MobileLayout>
+    );
+  }
 
   return (
     <MobileLayout>
@@ -51,7 +61,7 @@ export default function ParentHome() {
                 </CardContent>
               </Card>
             ))
-          ) : babysitters?.map((sitter) => (
+          ) : (babysitters || []).map((sitter) => (
             <motion.div
               key={sitter.id}
               initial={{ opacity: 0, y: 20 }}
