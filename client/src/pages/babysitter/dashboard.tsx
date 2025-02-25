@@ -7,14 +7,22 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/hooks/use-auth";
-import { Calendar, Clock, DollarSign } from "lucide-react";
+import { Calendar, Clock, DollarSign, MapPin } from "lucide-react";
 import type { Booking } from "@shared/schema";
+import GoogleMapComponent from '@/components/maps/GoogleMapComponent';
+import { useLocationTracking } from '@/hooks/use-location-tracking';
 
 export default function BabysitterDashboard() {
   const { user } = useAuth();
   const { data: bookings } = useQuery<Booking[]>({
     queryKey: [`/api/bookings/${user?.id}`],
   });
+
+  const { location, watching, startTracking, stopTracking } = useLocationTracking({
+    isTracker: true
+  });
+
+  const activeBooking = bookings?.find(b => b.status === "accepted");
 
   return (
     <MobileLayout>
@@ -45,6 +53,49 @@ export default function BabysitterDashboard() {
             </div>
           </CardContent>
         </Card>
+
+        {activeBooking && (
+          <Card>
+            <CardContent className="p-6 space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="space-y-1">
+                  <h2 className="font-medium">Location Tracking</h2>
+                  <p className="text-sm text-muted-foreground">
+                    Share your location while on duty
+                  </p>
+                </div>
+                <Switch
+                  checked={watching}
+                  onCheckedChange={(checked) => {
+                    if (checked) {
+                      startTracking();
+                    } else {
+                      stopTracking();
+                    }
+                  }}
+                />
+              </div>
+
+              {location && (
+                <div className="h-[300px] relative rounded-lg overflow-hidden">
+                  <GoogleMapComponent
+                    center={location}
+                    markers={[
+                      {
+                        position: location,
+                        title: "Your Location"
+                      }
+                    ]}
+                  />
+                  <div className="absolute bottom-4 left-4 bg-background/80 backdrop-blur-sm p-2 rounded-lg flex items-center space-x-2">
+                    <MapPin className="h-4 w-4 text-primary" />
+                    <span className="text-sm">Live Location Active</span>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
 
         <div className="grid grid-cols-2 gap-4">
           <Card>
@@ -84,7 +135,7 @@ export default function BabysitterDashboard() {
                             {format(new Date(booking.startTime), "MMM d, yyyy")}
                           </div>
                           <div className="text-sm text-muted-foreground">
-                            {format(new Date(booking.startTime), "h:mm a")} - 
+                            {format(new Date(booking.startTime), "h:mm a")} -
                             {format(new Date(booking.endTime), "h:mm a")}
                           </div>
                         </div>

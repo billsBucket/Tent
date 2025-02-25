@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { setupAuth } from "./auth";
 import { storage } from "./storage";
 import { insertBookingSchema, insertVerificationSchema } from "@shared/schema";
+import { setupWebSocket } from "./socket";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   setupAuth(app);
@@ -53,5 +54,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   const httpServer = createServer(app);
+
+  // Setup WebSocket server
+  setupWebSocket(httpServer);
+
   return httpServer;
 }
