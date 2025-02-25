@@ -109,7 +109,19 @@ export const bookings = pgTable("bookings", {
   startTime: timestamp("start_time").notNull(),
   endTime: timestamp("end_time").notNull(),
   status: text("status", { enum: ["pending", "accepted", "completed", "cancelled"] }).notNull(),
-  specialInstructions: text("special_instructions"),
+  serviceType: text("service_type", {
+    enum: ["standard", "educational", "special_needs", "overnight"]
+  }).notNull(),
+  location: text("location").notNull(),
+  totalAmount: integer("total_amount").notNull(),
+  specialInstructions: json("special_instructions").$type<{
+    children: Array<{
+      age: number;
+      specialNeeds?: string;
+    }>;
+    duration: number;
+    notes?: string;
+  }>().notNull(),
 });
 
 export const insertBookingSchema = createInsertSchema(bookings);
