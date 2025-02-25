@@ -15,21 +15,20 @@ export default function SplashScreen() {
   }, [setLocation]);
 
   return (
-    <MobileLayout className="flex items-center justify-center">
+    <MobileLayout className="flex items-center justify-center bg-black">
       <motion.div
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.5 }}
         className="text-center"
       >
-        <motion.h1 
-          className="text-4xl font-bold mb-2"
+        <motion.img 
+          src="/attached_assets/1.png"
+          alt="Tent Logo"
+          className="w-24 h-24 mx-auto"
           animate={{ y: [0, -10, 0] }}
           transition={{ duration: 1.5, repeat: Infinity }}
-        >
-          Tent
-        </motion.h1>
-        <p className="text-muted-foreground">Trusted Babysitting</p>
+        />
       </motion.div>
     </MobileLayout>
   );

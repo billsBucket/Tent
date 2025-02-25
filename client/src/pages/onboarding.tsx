@@ -38,9 +38,14 @@ export default function OnboardingPage() {
   const skipOnboarding = () => setLocation("/auth");
 
   return (
-    <MobileLayout className="flex flex-col">
-      <div className="flex justify-end mb-4">
-        <Button variant="ghost" size="sm" onClick={skipOnboarding}>
+    <MobileLayout className="flex flex-col bg-black">
+      <div className="flex justify-between items-center mb-8">
+        <img 
+          src="/attached_assets/2.png" 
+          alt="Tent Logo" 
+          className="h-8"
+        />
+        <Button variant="ghost" size="sm" onClick={skipOnboarding} className="text-white">
           <X className="h-4 w-4 mr-2" />
           Skip
         </Button>
@@ -57,9 +62,9 @@ export default function OnboardingPage() {
           {slides.map((slide, index) => (
             currentSlide === index && (
               <div key={index} className="space-y-6">
-                <slide.icon className="h-16 w-16 mx-auto mb-6" />
-                <h2 className="text-2xl font-bold">{slide.title}</h2>
-                <p className="text-muted-foreground">{slide.description}</p>
+                <slide.icon className="h-16 w-16 mx-auto mb-6 text-white" />
+                <h2 className="text-2xl font-bold text-white">{slide.title}</h2>
+                <p className="text-gray-400">{slide.description}</p>
               </div>
             )
           ))}
@@ -72,13 +77,13 @@ export default function OnboardingPage() {
             <div
               key={index}
               className={`h-2 w-2 rounded-full transition-colors ${
-                index === currentSlide ? "bg-primary" : "bg-muted"
+                index === currentSlide ? "bg-white" : "bg-gray-700"
               }`}
             />
           ))}
         </div>
 
-        <Button className="w-full" onClick={nextSlide}>
+        <Button className="w-full bg-white text-black hover:bg-gray-100" onClick={nextSlide}>
           {currentSlide === slides.length - 1 ? "Get Started" : "Next"}
           <ChevronRight className="h-4 w-4 ml-2" />
         </Button>
