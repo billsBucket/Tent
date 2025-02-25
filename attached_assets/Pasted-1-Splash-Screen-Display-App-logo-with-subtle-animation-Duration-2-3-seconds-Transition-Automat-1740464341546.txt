@@ -1,0 +1,183 @@
+1. Splash Screen
+Display: App logo with subtle animation.
+Duration: 2–3 seconds.
+Transition: Automatically leads to the Onboarding screens.
+2. Onboarding / Introduction Screens
+Content:
+Slides describing Tent's core features:
+Secure babysitter bookings.
+Verified babysitters with Government ID and Face Validation.
+Detailed parent profiles, including kids’ info.
+Brief explanation of Tent’s safety protocols.
+Actions:
+Option to “Skip” or “Next.”
+Transition: Proceeds to the Login/Registration screen.
+3. Login / Registration Screen
+Options:
+Login: Via email, phone number, or social media (Facebook, Google).
+Register: New users can sign up by entering basic details.
+Process for Phone Login:
+Step 1: Enter phone number.
+Step 2: Receive and input OTP for verification.
+Transition: After successful login/registration, user proceeds to account type selection.
+4. Account Type Selection (Dual User Types)
+Options:
+Parent:
+Required Info: Name, phone number, email.
+Additional Info: Create a family profile including details for each child (age, gender, allergies, routine, etc.).
+Babysitter:
+Required Info: Name, phone number, email.
+Additional Info: Detailed babysitter profile with work experience, certifications, and references.
+Document Upload:
+Government ID: Upload photo/scan of government-issued ID.
+Face Validation: Take a live selfie for biometric matching against the uploaded ID.
+Background Check: Optional background check integration for additional verification.
+Transition: Depending on selection, the user is directed to the appropriate profile creation flow.
+5. Parent Flow (User is a Parent)
+5.1 Parent Profile Setup
+Sections:
+Personal Details: Name, contact information.
+Family Details:
+Kids Information: For each child, include:
+Name, age, gender.
+Special needs, allergies, routine details.
+Optional photo.
+Address: Primary residence (for location-based babysitter search).
+Verification: Option to verify email/phone.
+Transition: After profile setup, parent lands on the Home screen.
+5.2 Home / Babysitter Search Screen
+Features:
+Search Bar: Enter location or babysitter specialties (e.g., "night care", "experience with infants").
+Filter Options:
+Hourly rate range.
+Babysitter rating.
+Specific certifications or skills.
+List/Grid View: Babysitter cards showing photo, name, rating, hourly rate, and availability.
+Actions: Tap on a babysitter’s card to view detailed profile.
+Transition: Navigate to Babysitter Profile Detail.
+5.3 Babysitter Profile Detail & Booking Request
+Details Shown:
+Babysitter’s photo, verified badge (Government ID and Face validation completed).
+Detailed bio: Experience, certifications, and user reviews.
+Hourly rate and availability calendar.
+Actions:
+View Availability: Choose a date and time.
+Add Booking Instructions: Input special requests (e.g., child's routine, allergies).
+Estimated Cost Calculation: Based on babysitter’s hourly rate and selected duration.
+Book Now: Confirm booking.
+Transition: Booking request sent; screen moves to a confirmation/pending state.
+5.4 Booking Confirmation & Pre-Service Validation
+Booking Summary: Date, time, babysitter details, and special instructions.
+Payment Setup:
+Choose or add payment method.
+Option to use promo codes.
+Pre-Service Notifications:
+Confirmation message with babysitter’s ETA.
+Option to track babysitter’s route on an integrated map.
+Transition: Booking request is confirmed; moves to “Session in Progress.”
+5.5 Session in Progress Screen
+Real-time Features:
+Map Tracking: View babysitter’s current location en route.
+Communication: In-app call or messaging with the babysitter.
+Emergency Button: Quick-access option for immediate assistance.
+During Session:
+Parents can see session timer and live updates.
+Transition: After the session ends, prompts move to Payment & Review.
+5.6 Payment & Review Screen
+Payment:
+Display final fare breakdown (session duration, tip).
+Confirm payment via the selected method.
+Review:
+Rate babysitter (1–5 stars).
+Provide feedback/comments.
+Transition: Successful payment and review redirect back to the Home screen, where they can book future babysitting sessions or browse more babysitters.
+5.7 Booking History & Profile Management
+Features:
+List past bookings with detailed receipts.
+Option to rebook favorite babysitters.
+Update profile details including kids’ information.
+6. Babysitter Flow (User is a Babysitter)
+6.1 Babysitter Profile Setup & Verification
+Profile Information:
+Personal details (name, contact).
+Professional info: Work experience, certifications, and skills.
+Hourly rate and availability.
+Verification Process:
+Government ID Upload: Securely capture a photo/scan of government-issued ID.
+Face Validation: Capture a live selfie; system runs biometric matching with the uploaded ID.
+Approval: Profile marked “Verified” once both validations pass.
+Transition: Upon completion, babysitter accesses their Dashboard.
+6.2 Babysitter Dashboard Screen
+Dashboard Elements:
+Status Toggle: Set online/offline to receive booking requests.
+Booking Requests: List incoming requests with parent’s details (brief summary, session time, location).
+Earnings Overview: Daily, weekly, and monthly summaries.
+Notifications: Message center for booking updates or communication from Tent support.
+Actions:
+Tap on booking requests to view detailed booking information.
+6.3 Booking Request Details & Acceptance
+Booking Request Screen:
+Parent & Session Info: Parent’s name, location, child’s details, special instructions.
+Session Timing: Date, start time, expected duration.
+Rate & Payment Info: Expected earnings for the session.
+Actions:
+Accept/Decline: Option to accept the booking or decline if unavailable.
+Transition: Accepted booking navigates to “Session in Progress.”
+6.4 Session in Progress Screen
+During Session:
+Navigation: Integrated map showing route to parent’s location (if needed).
+Session Timer: Start/stop to track hours for payment.
+Communication: In-app call/message with parent.
+Emergency Contact: A prominent emergency button.
+Transition: At session end, move to the Payment Confirmation screen.
+6.5 Earnings & Payouts Screen
+Features:
+View Earnings: Detailed breakdown per session and cumulative earnings.
+Payment History: Record of all payouts.
+Withdraw Funds: Option to transfer earnings to a linked bank account or digital wallet.
+Transition: After review, babysitter returns to the Dashboard for further requests.
+6.6 Profile Management & Settings
+Manage Profile:
+Update personal details, certifications, hourly rates, and availability.
+Re-upload documents if required (e.g., for re-validation).
+Settings:
+Manage notifications, change password, and update payment details.
+7. Shared Features (For Both Parents and Babysitters)
+7.1 Notifications
+Types:
+Booking confirmations, session updates, payment receipts, and promotions.
+Critical alerts (e.g., emergency button pressed, verification updates).
+Delivery: In-app, push notifications, and email.
+7.2 Help & Support
+Access: In-app FAQ, live chat, email, and phone support.
+Content: Guides on account verification, payment issues, safety tips, and dispute resolution.
+7.3 Settings & Security
+Personal Data: Update profile information, change password, and manage privacy settings.
+Payment Methods: Add, edit, or remove payment options.
+Security Options: Enable two-factor authentication (2FA), and manage notification preferences.
+8. Post-Session Flow
+8.1 Rating & Review Process
+For Parents:
+Rate the babysitter (1–5 stars) and leave feedback.
+Option to share additional details about the session.
+For Babysitters:
+Option to rate the experience with the parent (for mutual accountability).
+Visibility: Ratings and reviews appear on profiles to help build trust within the community.
+8.2 Referral & Promo Code System
+Incentives: Both parents and babysitters can earn rewards (e.g., session discounts, bonus earnings) by referring new users.
+Flow: Referral code is shared via social media, email, or messaging.
+9. Logout / Switch Account
+Actions:
+Log out or switch between parent and babysitter profiles (if a user holds dual roles).
+Security: Ensure session termination and data security upon logout.
+10. Admin Panel (Backend Management)
+10.1 User Verification:
+Action: Review and approve babysitter Government ID and Face Validation submissions.
+Action: Monitor parent profiles and kids’ information for completeness and safety.
+10.2 Booking & Dispute Management:
+Action: Monitor and manage live and completed bookings.
+Action: Handle cancellations, disputes, and refunds.
+10.3 Analytics & Reporting:
+Action: Track app usage, booking trends, verification statistics, and user satisfaction ratings.
+10.4 Content Moderation:
+Action: Ensure all uploaded documents and profiles meet safety and regulatory standards.
