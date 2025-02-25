@@ -24,16 +24,24 @@ interface MapProps {
 export default function GoogleMapComponent({ center = defaultCenter, markers = [], onLoad }: MapProps) {
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
-    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
+    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "",
     libraries: ['places']
   });
 
   const [map, setMap] = useState<google.maps.Map | null>(null);
 
   const handleLoad = useCallback((map: google.maps.Map) => {
+    const bounds = new window.google.maps.LatLngBounds();
+    markers.forEach(marker => bounds.extend(marker.position));
+    if (markers.length > 0) {
+      map.fitBounds(bounds);
+    } else {
+      map.setCenter(center);
+      map.setZoom(14);
+    }
     setMap(map);
     onLoad?.(map);
-  }, [onLoad]);
+  }, [center, markers, onLoad]);
 
   const handleUnmount = useCallback(() => {
     setMap(null);
@@ -47,7 +55,7 @@ export default function GoogleMapComponent({ center = defaultCenter, markers = [
     <GoogleMap
       mapContainerStyle={containerStyle}
       center={center}
-      zoom={13}
+      zoom={14}
       onLoad={handleLoad}
       onUnmount={handleUnmount}
       options={{
@@ -55,6 +63,13 @@ export default function GoogleMapComponent({ center = defaultCenter, markers = [
         streetViewControl: false,
         mapTypeControl: false,
         fullscreenControl: false,
+        styles: [
+          {
+            featureType: "poi",
+            elementType: "labels",
+            stylers: [{ visibility: "off" }]
+          }
+        ]
       }}
     >
       {markers.map((marker, index) => (
@@ -62,6 +77,7 @@ export default function GoogleMapComponent({ center = defaultCenter, markers = [
           key={index}
           position={marker.position}
           title={marker.title}
+          animation={window.google.maps.Animation.DROP}
         />
       ))}
     </GoogleMap>

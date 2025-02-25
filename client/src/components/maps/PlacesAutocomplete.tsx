@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { MapPin, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface PlacesAutocompleteProps {
   onPlaceSelect: (place: {
@@ -32,7 +32,7 @@ export default function PlacesAutocomplete({ onPlaceSelect, placeholder = "Enter
   }, []);
 
   const getPlacePredictions = async (input: string) => {
-    if (!input || !autocompleteService.current) return;
+    if (!input || !autocompleteService.current || input.length < 3) return;
 
     setLoading(true);
     try {
@@ -56,7 +56,7 @@ export default function PlacesAutocomplete({ onPlaceSelect, placeholder = "Enter
     placesService.current.getDetails(
       {
         placeId: prediction.place_id,
-        fields: ['formatted_address', 'geometry'],
+        fields: ['formatted_address', 'geometry', 'name'],
         sessionToken: sessionToken.current || undefined
       },
       (place, status) => {
@@ -82,8 +82,9 @@ export default function PlacesAutocomplete({ onPlaceSelect, placeholder = "Enter
         <Input
           value={inputValue}
           onChange={(e) => {
-            setInputValue(e.target.value);
-            getPlacePredictions(e.target.value);
+            const value = e.target.value;
+            setInputValue(value);
+            getPlacePredictions(value);
           }}
           placeholder={placeholder}
           className="pl-10"
