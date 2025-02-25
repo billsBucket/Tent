@@ -10,6 +10,7 @@ import OnboardingPage from "@/pages/onboarding";
 import AuthPage from "@/pages/auth-page";
 import VerificationFlow from "@/pages/verification/verification-flow";
 import ParentHome from "@/pages/parent/home";
+import ParentProfileSetup from "@/pages/parent/profile-setup";
 import BabysitterDashboard from "@/pages/babysitter/dashboard";
 import BabysitterDetail from "@/pages/parent/babysitter-detail";
 
@@ -20,6 +21,7 @@ function Router() {
       <Route path="/onboarding" component={OnboardingPage} />
       <Route path="/auth" component={AuthPage} />
       <ProtectedRoute path="/verification" component={VerificationFlow} />
+      <ProtectedRoute path="/parent/profile-setup" component={ParentProfileSetup} />
       <ProtectedRoute path="/parent/home" component={ParentHome} />
       <ProtectedRoute path="/parent/babysitter/:id" component={BabysitterDetail} />
       <ProtectedRoute path="/babysitter/dashboard" component={BabysitterDashboard} />
