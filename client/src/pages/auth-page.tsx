@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -20,30 +20,45 @@ export default function AuthPage() {
   const { user, loginMutation, registerMutation } = useAuth();
   const [activeTab, setActiveTab] = useState<"login" | "register">("login");
 
-  if (user) {
-    const redirectPath = user.userType === "parent" ? "/parent/home" : "/babysitter/dashboard";
-    setLocation(redirectPath);
-    return null;
-  }
-
   const loginForm = useForm({
     resolver: zodResolver(insertUserSchema.pick({ username: true, password: true })),
+    defaultValues: {
+      username: "",
+      password: "",
+    },
   });
 
   const registerForm = useForm({
     resolver: zodResolver(insertUserSchema),
     defaultValues: {
       userType: "parent",
+      username: "",
+      password: "",
+      phoneNumber: "",
+      fullName: "",
+      email: "",
     },
   });
 
+  useEffect(() => {
+    if (user) {
+      const redirectPath = user.userType === "parent" ? "/parent/home" : "/babysitter/dashboard";
+      setLocation(redirectPath);
+    }
+  }, [user, setLocation]);
+
   const onLoginSubmit = loginForm.handleSubmit((data) => {
-    loginMutation.mutate(data);
+    loginMutation.mutate({
+      username: data.username,
+      password: data.password,
+    });
   });
 
   const onRegisterSubmit = registerForm.handleSubmit((data) => {
     registerMutation.mutate(data);
   });
+
+  if (user) return null;
 
   return (
     <MobileLayout className="flex flex-col justify-center">
