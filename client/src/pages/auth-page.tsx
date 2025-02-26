@@ -2,23 +2,23 @@ import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/hooks/use-auth";
 import { insertUserSchema } from "@shared/schema";
 import { MobileLayout } from "@/components/layout/mobile-layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2 } from "lucide-react";
+import { Loader2, ArrowLeft, Phone, ChevronRight } from "lucide-react";
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 
 export default function AuthPage() {
   const [, setLocation] = useLocation();
   const { user, loginMutation, registerMutation } = useAuth();
-  const [activeTab, setActiveTab] = useState<"login" | "register">("login");
+  const [step, setStep] = useState<"start" | "login" | "register">("start");
+  const [isPhoneVerified, setIsPhoneVerified] = useState(false);
 
   const loginForm = useForm({
     resolver: zodResolver(insertUserSchema.pick({ username: true, password: true })),
@@ -64,25 +64,71 @@ export default function AuthPage() {
 
   if (user) return null;
 
-  return (
-    <MobileLayout className="flex flex-col justify-center">
-      <motion.div
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        className="space-y-6"
-      >
-        <div className="text-center space-y-2">
-          <h1 className="text-3xl font-bold">Welcome to BabySitterGo</h1>
-          <p className="text-muted-foreground">Find trusted babysitters near you</p>
-        </div>
+  const renderStep = () => {
+    switch (step) {
+      case "start":
+        return (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="flex flex-col items-center justify-center min-h-[60vh] p-6 space-y-6"
+          >
+            <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+              <Phone className="h-10 w-10 text-primary" />
+            </div>
 
-        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "login" | "register")}>
-          <TabsList className="grid grid-cols-2 w-full">
-            <TabsTrigger value="login">Login</TabsTrigger>
-            <TabsTrigger value="register">Register</TabsTrigger>
-          </TabsList>
+            <div className="text-center space-y-2">
+              <h1 className="text-3xl font-bold">Welcome to BabySitterGo</h1>
+              <p className="text-muted-foreground">
+                Sign in or create an account to get started
+              </p>
+            </div>
 
-          <TabsContent value="login">
+            <div className="w-full space-y-4 mt-8">
+              <Button 
+                className="w-full h-14 text-lg"
+                onClick={() => setStep("login")}
+              >
+                Sign In
+                <ChevronRight className="h-5 w-5 ml-2" />
+              </Button>
+              <Button 
+                variant="outline"
+                className="w-full h-14 text-lg"
+                onClick={() => setStep("register")}
+              >
+                Create Account
+                <ChevronRight className="h-5 w-5 ml-2" />
+              </Button>
+            </div>
+          </motion.div>
+        );
+
+      case "login":
+        return (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="flex flex-col min-h-[60vh] p-6 space-y-6"
+          >
+            <Button
+              variant="ghost"
+              className="w-fit -ml-2"
+              onClick={() => setStep("start")}
+            >
+              <ArrowLeft className="h-5 w-5 mr-2" />
+              Back
+            </Button>
+
+            <div className="space-y-2">
+              <h1 className="text-2xl font-bold">Welcome back</h1>
+              <p className="text-muted-foreground">
+                Sign in to your account
+              </p>
+            </div>
+
             <Form {...loginForm}>
               <form onSubmit={onLoginSubmit} className="space-y-4">
                 <FormField
@@ -115,17 +161,51 @@ export default function AuthPage() {
 
                 <Button 
                   type="submit" 
-                  className="w-full" 
+                  className="w-full h-14 text-lg mt-6" 
                   disabled={loginMutation.isPending}
                 >
                   {loginMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Login
+                  Sign In
                 </Button>
               </form>
             </Form>
-          </TabsContent>
 
-          <TabsContent value="register">
+            <div className="text-center">
+              <Button 
+                variant="link" 
+                className="text-sm"
+                onClick={() => setStep("register")}
+              >
+                Don't have an account? Create one
+              </Button>
+            </div>
+          </motion.div>
+        );
+
+      case "register":
+        return (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="flex flex-col min-h-[60vh] p-6 space-y-6"
+          >
+            <Button
+              variant="ghost"
+              className="w-fit -ml-2"
+              onClick={() => setStep("start")}
+            >
+              <ArrowLeft className="h-5 w-5 mr-2" />
+              Back
+            </Button>
+
+            <div className="space-y-2">
+              <h1 className="text-2xl font-bold">Create account</h1>
+              <p className="text-muted-foreground">
+                Join BabySitterGo to get started
+              </p>
+            </div>
+
             <Form {...registerForm}>
               <form onSubmit={onRegisterSubmit} className="space-y-4">
                 <FormField
@@ -145,6 +225,31 @@ export default function AuthPage() {
                           <SelectItem value="babysitter">Babysitter</SelectItem>
                         </SelectContent>
                       </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={registerForm.control}
+                  name="phoneNumber"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Phone Number</FormLabel>
+                      <FormControl>
+                        <div className="phone-input-container">
+                          <PhoneInput
+                            country={'us'}
+                            value={field.value}
+                            onChange={phone => field.onChange(phone)}
+                            enableSearch={true}
+                            inputClass="!w-full !h-10 !rounded-md !px-3 !py-2 !bg-background !border !border-input"
+                            buttonClass="!border !border-input !rounded-l-md !bg-background"
+                            dropdownClass="!bg-background !border !border-input"
+                            searchClass="!bg-background !text-foreground"
+                          />
+                        </div>
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -192,58 +297,36 @@ export default function AuthPage() {
                   )}
                 />
 
-                <FormField
-                  control={registerForm.control}
-                  name="phoneNumber"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Phone Number</FormLabel>
-                      <FormControl>
-                        <div className="phone-input-container">
-                          <PhoneInput
-                            country={'us'}
-                            value={field.value}
-                            onChange={phone => field.onChange(phone)}
-                            enableSearch={true}
-                            inputClass="!w-full !h-10 !rounded-md !px-3 !py-2 !bg-background !border !border-input"
-                            buttonClass="!border !border-input !rounded-l-md !bg-background"
-                            dropdownClass="!bg-background !border !border-input"
-                            searchClass="!bg-background !text-foreground"
-                          />
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={registerForm.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email (Optional)</FormLabel>
-                      <FormControl>
-                        <Input type="email" placeholder="Enter email address" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
                 <Button 
                   type="submit" 
-                  className="w-full"
+                  className="w-full h-14 text-lg mt-6"
                   disabled={registerMutation.isPending}
                 >
                   {registerMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Register
+                  Create Account
                 </Button>
               </form>
             </Form>
-          </TabsContent>
-        </Tabs>
-      </motion.div>
+
+            <div className="text-center">
+              <Button 
+                variant="link" 
+                className="text-sm"
+                onClick={() => setStep("login")}
+              >
+                Already have an account? Sign in
+              </Button>
+            </div>
+          </motion.div>
+        );
+    }
+  };
+
+  return (
+    <MobileLayout className="bg-background">
+      <AnimatePresence mode="wait">
+        {renderStep()}
+      </AnimatePresence>
     </MobileLayout>
   );
 }
