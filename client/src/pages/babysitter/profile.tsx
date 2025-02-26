@@ -22,7 +22,7 @@ import {
 export default function BabysitterProfile() {
   const [, setLocation] = useLocation();
   const { user } = useAuth();
-  
+
   return (
     <MobileLayout>
       <motion.div
@@ -53,9 +53,9 @@ export default function BabysitterProfile() {
               </Avatar>
               <Button
                 size="icon"
-                className="absolute bottom-0 right-0 rounded-full"
+                className="absolute bottom-0 right-0 rounded-full bg-primary"
               >
-                <Camera className="h-4 w-4" />
+                <Camera className="h-4 w-4 text-white" />
               </Button>
             </div>
           </div>
@@ -71,15 +71,15 @@ export default function BabysitterProfile() {
               <span className="text-muted-foreground ml-1">(124 reviews)</span>
             </div>
             <div className="flex justify-center gap-2 mt-4">
-              <Badge variant="secondary">
+              <Badge variant="secondary" className="bg-blue-100 text-blue-700">
                 <Clock className="h-4 w-4 mr-1" />
                 2+ years
               </Badge>
-              <Badge variant="secondary">
+              <Badge variant="secondary" className="bg-green-100 text-green-700">
                 <Shield className="h-4 w-4 mr-1" />
                 Verified
               </Badge>
-              <Badge variant="secondary">
+              <Badge variant="secondary" className="bg-purple-100 text-purple-700">
                 <MapPin className="h-4 w-4 mr-1" />
                 New York
               </Badge>
@@ -91,7 +91,7 @@ export default function BabysitterProfile() {
         <Card>
           <CardHeader>
             <div className="flex items-center">
-              <Award className="h-5 w-5 mr-2 text-primary" />
+              <Award className="h-5 w-5 mr-2 text-blue-500" />
               <h3 className="font-medium">Experience & Certifications</h3>
             </div>
           </CardHeader>
@@ -103,9 +103,9 @@ export default function BabysitterProfile() {
             <div>
               <Label>Certifications</Label>
               <div className="flex flex-wrap gap-2 mt-2">
-                <Badge>First Aid Certified</Badge>
-                <Badge>CPR Certified</Badge>
-                <Badge>Child Care License</Badge>
+                <Badge className="bg-red-100 text-red-700">First Aid Certified</Badge>
+                <Badge className="bg-blue-100 text-blue-700">CPR Certified</Badge>
+                <Badge className="bg-green-100 text-green-700">Child Care License</Badge>
               </div>
             </div>
           </CardContent>
@@ -134,15 +134,15 @@ export default function BabysitterProfile() {
             <div className="space-y-2">
               <div className="flex justify-between">
                 <span>Monday - Friday</span>
-                <span className="text-primary">9:00 AM - 6:00 PM</span>
+                <span className="text-primary-foreground bg-primary px-2 py-1 rounded-md text-sm">9:00 AM - 6:00 PM</span>
               </div>
               <div className="flex justify-between">
                 <span>Saturday</span>
-                <span className="text-primary">10:00 AM - 4:00 PM</span>
+                <span className="text-primary-foreground bg-primary px-2 py-1 rounded-md text-sm">10:00 AM - 4:00 PM</span>
               </div>
               <div className="flex justify-between">
                 <span>Sunday</span>
-                <span className="text-muted-foreground">Unavailable</span>
+                <span className="text-destructive">Unavailable</span>
               </div>
             </div>
           </CardContent>

@@ -52,7 +52,7 @@ export function BabysitterSettings() {
               onClick={() => setLocation("/babysitter/security")}
             >
               <div className="flex items-center space-x-3">
-                <Shield className="h-5 w-5 text-primary" />
+                <Shield className="h-5 w-5 text-blue-500" />
                 <span>Security</span>
               </div>
               <ChevronRight className="h-5 w-5 text-muted-foreground" />
@@ -63,7 +63,7 @@ export function BabysitterSettings() {
               onClick={() => setLocation("/babysitter/privacy")}
             >
               <div className="flex items-center space-x-3">
-                <Lock className="h-5 w-5 text-primary" />
+                <Lock className="h-5 w-5 text-green-500" />
                 <span>Privacy</span>
               </div>
               <ChevronRight className="h-5 w-5 text-muted-foreground" />
@@ -74,7 +74,7 @@ export function BabysitterSettings() {
               onClick={() => setLocation("/babysitter/payments")}
             >
               <div className="flex items-center space-x-3">
-                <CreditCard className="h-5 w-5 text-primary" />
+                <CreditCard className="h-5 w-5 text-purple-500" />
                 <span>Payment Methods</span>
               </div>
               <ChevronRight className="h-5 w-5 text-muted-foreground" />
@@ -87,18 +87,18 @@ export function BabysitterSettings() {
           <CardContent className="p-4 space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <Bell className="h-5 w-5 text-primary" />
+                <Bell className="h-5 w-5 text-orange-500" />
                 <span>Push Notifications</span>
               </div>
-              <Switch defaultChecked />
+              <Switch className="data-[state=checked]:bg-green-500" defaultChecked />
             </div>
 
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <Bell className="h-5 w-5 text-primary" />
+                <Bell className="h-5 w-5 text-orange-500" />
                 <span>Email Notifications</span>
               </div>
-              <Switch defaultChecked />
+              <Switch className="data-[state=checked]:bg-green-500" defaultChecked />
             </div>
           </CardContent>
         </Card>
@@ -111,7 +111,7 @@ export function BabysitterSettings() {
               onClick={() => setLocation("/babysitter/help")}
             >
               <div className="flex items-center space-x-3">
-                <HelpCircle className="h-5 w-5 text-primary" />
+                <HelpCircle className="h-5 w-5 text-cyan-500" />
                 <span>Help & Support</span>
               </div>
               <ChevronRight className="h-5 w-5 text-muted-foreground" />
