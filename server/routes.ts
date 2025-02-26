@@ -6,6 +6,7 @@ import { insertBookingSchema, insertVerificationSchema } from "@shared/schema";
 import { setupWebSocket } from "./socket";
 import multer from "multer";
 import axios from "axios";
+import { stripe, createPaymentIntent } from "./stripe";
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -167,6 +168,53 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
     const verifications = await storage.getUserVerifications(parseInt(req.params.userId));
     res.json(verifications);
+  });
+
+  // Create payment intent endpoint
+  app.post("/api/create-payment-intent", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.sendStatus(401);
+    }
+
+    try {
+      const { amount } = req.body;
+      const paymentIntent = await createPaymentIntent(amount);
+      res.json({ clientSecret: paymentIntent.client_secret });
+    } catch (error) {
+      console.error("Error creating payment intent:", error);
+      res.status(500).json({ error: "Failed to create payment intent" });
+    }
+  });
+
+  // Stripe webhook endpoint
+  app.post("/api/webhook", async (req, res) => {
+    const sig = req.headers['stripe-signature'];
+    let event;
+
+    try {
+      event = stripe.webhooks.constructEvent(
+        req.body,
+        sig,
+        process.env.STRIPE_WEBHOOK_SECRET
+      );
+    } catch (err) {
+      console.error("Webhook signature verification failed:", err);
+      return res.status(400).send(`Webhook Error: ${err.message}`);
+    }
+
+    // Handle the event
+    switch (event.type) {
+      case 'payment_intent.succeeded':
+        const paymentIntent = event.data.object;
+        // Handle successful payment
+        // Update booking status, send notifications, etc.
+        break;
+      case 'payment_intent.payment_failed':
+        // Handle failed payment
+        break;
+    }
+
+    res.json({ received: true });
   });
 
   const httpServer = createServer(app);
