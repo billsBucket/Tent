@@ -114,6 +114,7 @@ export default function BabysitterDashboard() {
               <Switch
                 checked={isOnline}
                 onCheckedChange={setIsOnline}
+                className="data-[state=checked]:bg-green-500"
               />
             </div>
 
@@ -129,7 +130,7 @@ export default function BabysitterDashboard() {
                   ]}
                 />
                 <div className="absolute bottom-4 left-4 bg-background/80 backdrop-blur-sm p-2 rounded-lg flex items-center space-x-2">
-                  <MapPin className="h-4 w-4 text-primary" />
+                  <MapPin className="h-4 w-4 text-green-500" />
                   <span className="text-sm">Live Location Active</span>
                 </div>
               </div>
@@ -171,18 +172,18 @@ export default function BabysitterDashboard() {
           </CardHeader>
           <CardContent className="grid grid-cols-3 gap-4 p-4">
             <div className="text-center">
-              <DollarSign className="h-6 w-6 mx-auto mb-1 text-primary" />
-              <div className="text-xl font-bold">${todaysEarnings}</div>
+              <DollarSign className="h-6 w-6 mx-auto mb-1 text-green-500" />
+              <div className="text-xl font-bold text-green-600">${todaysEarnings}</div>
               <p className="text-xs text-muted-foreground">Earnings</p>
             </div>
             <div className="text-center">
-              <Clock className="h-6 w-6 mx-auto mb-1 text-primary" />
-              <div className="text-xl font-bold">{totalHours}</div>
+              <Clock className="h-6 w-6 mx-auto mb-1 text-blue-500" />
+              <div className="text-xl font-bold text-blue-600">{totalHours}</div>
               <p className="text-xs text-muted-foreground">Hours</p>
             </div>
             <div className="text-center">
-              <Calendar className="h-6 w-6 mx-auto mb-1 text-primary" />
-              <div className="text-xl font-bold">{bookings?.length || 0}</div>
+              <Calendar className="h-6 w-6 mx-auto mb-1 text-purple-500" />
+              <div className="text-xl font-bold text-purple-600">{bookings?.length || 0}</div>
               <p className="text-xs text-muted-foreground">Bookings</p>
             </div>
           </CardContent>
@@ -206,10 +207,10 @@ export default function BabysitterDashboard() {
                 <ChevronRight className="h-5 w-5" />
               </Button>
             </div>
-            <div className="text-3xl font-bold mb-2">${weeklyEarnings}</div>
-            <div className="h-2 bg-primary/10 rounded-full overflow-hidden">
+            <div className="text-3xl font-bold mb-2 text-green-600">${weeklyEarnings}</div>
+            <div className="h-2 bg-green-100 rounded-full overflow-hidden">
               <div
-                className="h-full bg-primary transition-all"
+                className="h-full bg-green-500 transition-all"
                 style={{ width: `${(todaysEarnings / weeklyEarnings) * 100}%` }}
               />
             </div>
@@ -223,7 +224,7 @@ export default function BabysitterDashboard() {
             className="flex flex-col items-center py-4"
             onClick={() => setLocation("/babysitter/profile")}
           >
-            <User className="h-5 w-5 mb-1" />
+            <User className="h-5 w-5 mb-1 text-purple-500" />
             <span className="text-xs">Profile</span>
           </Button>
           <Button
@@ -231,7 +232,7 @@ export default function BabysitterDashboard() {
             className="flex flex-col items-center py-4"
             onClick={() => setLocation("/babysitter/messages")}
           >
-            <MessageSquare className="h-5 w-5 mb-1" />
+            <MessageSquare className="h-5 w-5 mb-1 text-blue-500" />
             <span className="text-xs">Messages</span>
           </Button>
           <Button
@@ -239,7 +240,7 @@ export default function BabysitterDashboard() {
             className="flex flex-col items-center py-4"
             onClick={() => setLocation("/babysitter/earnings")}
           >
-            <DollarSign className="h-5 w-5 mb-1" />
+            <DollarSign className="h-5 w-5 mb-1 text-green-500" />
             <span className="text-xs">Earnings</span>
           </Button>
           <Button
@@ -247,7 +248,7 @@ export default function BabysitterDashboard() {
             className="flex flex-col items-center py-4"
             onClick={() => setLocation("/babysitter/schedule")}
           >
-            <Calendar className="h-5 w-5 mb-1" />
+            <Calendar className="h-5 w-5 mb-1 text-orange-500" />
             <span className="text-xs">Schedule</span>
           </Button>
         </div>
@@ -272,7 +273,7 @@ export default function BabysitterDashboard() {
                 <Card>
                   <CardContent className="p-4">
                     <div className="flex items-center space-x-4">
-                      <Calendar className="h-8 w-8 text-muted-foreground" />
+                      <Calendar className="h-8 w-8 text-purple-500" />
                       <div className="flex-1">
                         <div className="font-medium">
                           {format(new Date(booking.startTime), "MMM d, yyyy")}
@@ -293,42 +294,6 @@ export default function BabysitterDashboard() {
             ))}
           </CardContent>
         </Card>
-
-        {/* Fixed Bottom Navigation */}
-        <div className="fixed bottom-0 left-0 right-0 bg-background border-t p-2 flex justify-between items-center">
-          <Button
-            variant="ghost"
-            className="flex-1 flex flex-col items-center py-2"
-            onClick={() => setLocation("/babysitter/dashboard")}
-          >
-            <User className="h-5 w-5" />
-            <span className="text-xs">Home</span>
-          </Button>
-          <Button
-            variant="ghost"
-            className="flex-1 flex flex-col items-center py-2"
-            onClick={() => setLocation("/babysitter/messages")}
-          >
-            <MessageSquare className="h-5 w-5" />
-            <span className="text-xs">Messages</span>
-          </Button>
-          <Button
-            variant="ghost"
-            className="flex-1 flex flex-col items-center py-2"
-            onClick={() => setLocation("/babysitter/earnings")}
-          >
-            <DollarSign className="h-5 w-5" />
-            <span className="text-xs">Earnings</span>
-          </Button>
-          <Button
-            variant="ghost"
-            className="flex-1 flex flex-col items-center py-2"
-            onClick={() => setLocation("/babysitter/account")}
-          >
-            <Settings className="h-5 w-5" />
-            <span className="text-xs">Account</span>
-          </Button>
-        </div>
       </motion.div>
     </MobileLayout>
   );
