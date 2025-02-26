@@ -1,19 +1,21 @@
 import { useEffect } from "react";
-import { useParams } from "wouter";
+import { useParams, useLocation } from "wouter";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { MobileLayout } from "@/components/layout/mobile-layout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Phone, MessageSquare, Clock, MapPin } from "lucide-react";
+import { Phone, MessageSquare, AlertTriangle } from "lucide-react";
 import type { Booking, User } from "@shared/schema";
-import GoogleMapComponent from "@/components/maps/GoogleMapComponent";
-import { useLocationTracking } from "@/hooks/use-location-tracking";
+import { LocationTracker } from "@/components/tracking/LocationTracker";
+import { useToast } from "@/hooks/use-toast";
 
 export default function BookingTrackingPage() {
   const { id } = useParams();
-  
+  const [, setLocation] = useLocation();
+  const { toast } = useToast();
+
   const { data: booking } = useQuery<Booking>({
     queryKey: [`/api/bookings/${id}`],
   });
@@ -23,10 +25,27 @@ export default function BookingTrackingPage() {
     enabled: !!booking?.babysitterId,
   });
 
-  const { location } = useLocationTracking({
-    bookingId: parseInt(id!),
-    isTracker: false,
-  });
+  const handleCall = () => {
+    // In a production app, this would integrate with a calling service
+    toast({
+      title: "Initiating Call",
+      description: "Connecting to babysitter...",
+    });
+  };
+
+  const handleMessage = () => {
+    setLocation(`/parent/messages?babysitter=${babysitter?.id}`);
+  };
+
+  if (!booking || !babysitter) {
+    return (
+      <MobileLayout>
+        <div className="flex items-center justify-center min-h-screen">
+          <p>Loading...</p>
+        </div>
+      </MobileLayout>
+    );
+  }
 
   return (
     <MobileLayout>
@@ -35,63 +54,48 @@ export default function BookingTrackingPage() {
         animate={{ opacity: 1, y: 0 }}
         className="h-screen flex flex-col"
       >
-        {/* Map taking up most of the screen */}
-        <div className="flex-1 relative">
-          <GoogleMapComponent
-            center={location || { lat: 40.7128, lng: -74.0060 }}
-            markers={location ? [
-              {
-                position: location,
-                title: `${babysitter?.fullName}'s location`
-              }
-            ] : []}
+        {/* Location Tracker Map */}
+        <div className="flex-1">
+          <LocationTracker 
+            bookingId={id!} 
+            babysitterId={babysitter.id}
           />
         </div>
 
-        {/* Sliding panel at bottom */}
+        {/* Bottom Panel */}
         <Card className="rounded-t-xl shadow-lg">
           <CardContent className="p-4 space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
                 <Avatar className="h-12 w-12">
                   <AvatarImage
-                    src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${babysitter?.username}`}
+                    src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${babysitter.username}`}
                   />
-                  <AvatarFallback>{babysitter?.fullName?.[0]}</AvatarFallback>
+                  <AvatarFallback>{babysitter.fullName?.[0]}</AvatarFallback>
                 </Avatar>
                 <div>
-                  <h3 className="font-medium">{babysitter?.fullName}</h3>
-                  <p className="text-sm text-muted-foreground flex items-center">
-                    <Clock className="h-4 w-4 mr-1" />
-                    Arriving in 10 mins
+                  <h3 className="font-medium">{babysitter.fullName}</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Currently with {booking.childrenNames?.join(" & ")}
                   </p>
                 </div>
               </div>
               <div className="flex space-x-2">
-                <Button variant="outline" size="icon">
+                <Button variant="outline" size="icon" onClick={handleMessage}>
                   <MessageSquare className="h-4 w-4" />
                 </Button>
-                <Button variant="outline" size="icon">
+                <Button variant="outline" size="icon" onClick={handleCall}>
                   <Phone className="h-4 w-4" />
                 </Button>
               </div>
             </div>
 
-            <div className="space-y-2">
-              <div className="flex items-start space-x-2">
-                <MapPin className="h-4 w-4 mt-1 text-primary" />
-                <div>
-                  <p className="text-sm font-medium">Location</p>
-                  <p className="text-sm text-muted-foreground">
-                    {booking?.location || "Loading..."}
-                  </p>
-                </div>
-              </div>
+            <div className="pt-2">
+              <Button className="w-full" variant="destructive" size="lg">
+                <AlertTriangle className="h-5 w-5 mr-2" />
+                Emergency SOS
+              </Button>
             </div>
-
-            <Button className="w-full" variant="destructive">
-              Emergency Contact
-            </Button>
           </CardContent>
         </Card>
       </motion.div>
