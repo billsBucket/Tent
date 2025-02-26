@@ -12,6 +12,10 @@ import VerificationFlow from "@/pages/verification/verification-flow";
 import ParentHome from "@/pages/parent/home";
 import ParentProfileSetup from "@/pages/parent/profile-setup";
 import BabysitterDashboard from "@/pages/babysitter/dashboard";
+import BabysitterProfile from "@/pages/babysitter/profile";
+import BabysitterSettings from "@/pages/babysitter/settings";
+import BabysitterNotifications from "@/pages/babysitter/notifications";
+import BabysitterMessages from "@/pages/babysitter/messages";
 import BookingPage from "@/pages/parent/booking/[id]";
 import BookingTrackingPage from "@/pages/parent/booking/[id]/tracking";
 
@@ -27,6 +31,10 @@ function Router() {
       <ProtectedRoute path="/parent/booking/:id" component={BookingPage} />
       <ProtectedRoute path="/parent/booking/:id/tracking" component={BookingTrackingPage} />
       <ProtectedRoute path="/babysitter/dashboard" component={BabysitterDashboard} />
+      <ProtectedRoute path="/babysitter/profile" component={BabysitterProfile} />
+      <ProtectedRoute path="/babysitter/settings" component={BabysitterSettings} />
+      <ProtectedRoute path="/babysitter/notifications" component={BabysitterNotifications} />
+      <ProtectedRoute path="/babysitter/messages" component={BabysitterMessages} />
       <Route component={NotFound} />
     </Switch>
   );

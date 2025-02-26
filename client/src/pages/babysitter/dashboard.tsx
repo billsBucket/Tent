@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { format } from "date-fns";
@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/use-auth";
 import {
   Calendar,
@@ -16,10 +17,14 @@ import {
   Settings,
   User,
   MessageSquare,
-  Bell
+  Bell,
+  ChevronRight,
+  AlertCircle
 } from "lucide-react";
 import type { Booking } from "@shared/schema";
 import { useLocation } from "wouter";
+import GoogleMapComponent from '@/components/maps/GoogleMapComponent';
+import { useLocationTracking } from '@/hooks/use-location-tracking';
 
 export default function BabysitterDashboard() {
   const { user } = useAuth();
@@ -30,20 +35,33 @@ export default function BabysitterDashboard() {
     queryKey: [`/api/bookings/${user?.id}`],
   });
 
+  const { location, watching, startTracking, stopTracking } = useLocationTracking({
+    isTracker: true
+  });
+
   const activeBooking = bookings?.find(b => b.status === "accepted");
   const todaysEarnings = 120; // TODO: Calculate from actual bookings
   const weeklyEarnings = 840;
   const totalHours = 16;
+
+  // Effect to start/stop location tracking based on online status
+  useEffect(() => {
+    if (isOnline) {
+      startTracking();
+    } else {
+      stopTracking();
+    }
+  }, [isOnline, startTracking, stopTracking]);
 
   return (
     <MobileLayout>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="space-y-4"
+        className="space-y-4 pb-20"
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-4 bg-background border-b">
+        <div className="flex items-center justify-between p-4 bg-background border-b sticky top-0 z-10">
           <div className="flex items-center space-x-3">
             <Avatar
               className="h-10 w-10 cursor-pointer"
@@ -58,18 +76,34 @@ export default function BabysitterDashboard() {
             </div>
           </div>
           <div className="flex items-center space-x-3">
-            <Button variant="ghost" size="icon">
-              <Bell className="h-5 w-5" />
+            <Button 
+              variant="ghost" 
+              size="icon"
+              onClick={() => setLocation("/babysitter/notifications")}
+            >
+              <div className="relative">
+                <Bell className="h-5 w-5" />
+                <Badge 
+                  className="absolute -top-2 -right-2 h-4 w-4 p-0 flex items-center justify-center"
+                  variant="destructive"
+                >
+                  2
+                </Badge>
+              </div>
             </Button>
-            <Button variant="ghost" size="icon" onClick={() => setLocation("/babysitter/settings")}>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={() => setLocation("/babysitter/settings")}
+            >
               <Settings className="h-5 w-5" />
             </Button>
           </div>
         </div>
 
-        {/* Online Toggle */}
+        {/* Online Toggle with Map */}
         <Card>
-          <CardContent className="p-4">
+          <CardContent className="p-4 space-y-4">
             <div className="flex items-center justify-between">
               <div className="space-y-1">
                 <h3 className="font-medium">Go Online</h3>
@@ -82,8 +116,53 @@ export default function BabysitterDashboard() {
                 onCheckedChange={setIsOnline}
               />
             </div>
+
+            {isOnline && location && (
+              <div className="h-[200px] relative rounded-lg overflow-hidden">
+                <GoogleMapComponent
+                  center={location}
+                  markers={[
+                    {
+                      position: location,
+                      title: "Your Location"
+                    }
+                  ]}
+                />
+                <div className="absolute bottom-4 left-4 bg-background/80 backdrop-blur-sm p-2 rounded-lg flex items-center space-x-2">
+                  <MapPin className="h-4 w-4 text-primary" />
+                  <span className="text-sm">Live Location Active</span>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
+
+        {/* Active Booking Alert */}
+        {activeBooking && (
+          <Card className="border-primary">
+            <CardContent className="p-4">
+              <div className="flex items-center space-x-3">
+                <div className="p-2 bg-primary/10 rounded-full">
+                  <AlertCircle className="h-6 w-6 text-primary" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-medium">Active Booking</h3>
+                  <p className="text-sm text-muted-foreground">
+                    {format(new Date(activeBooking.startTime), "h:mm a")} - 
+                    {format(new Date(activeBooking.endTime), "h:mm a")}
+                  </p>
+                </div>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => setLocation(`/babysitter/booking/${activeBooking.id}`)}
+                >
+                  View
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Today's Summary */}
         <Card>
@@ -113,9 +192,18 @@ export default function BabysitterDashboard() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-medium">This Week's Earnings</h3>
-              <Button variant="outline" size="sm">
-                See Details
+              <div>
+                <h3 className="font-medium">This Week's Earnings</h3>
+                <p className="text-sm text-muted-foreground">
+                  {format(new Date(), "MMM d")} - {format(new Date(), "MMM d")}
+                </p>
+              </div>
+              <Button 
+                variant="ghost" 
+                size="icon"
+                onClick={() => setLocation("/babysitter/earnings")}
+              >
+                <ChevronRight className="h-5 w-5" />
               </Button>
             </div>
             <div className="text-3xl font-bold mb-2">${weeklyEarnings}</div>
@@ -129,7 +217,7 @@ export default function BabysitterDashboard() {
         </Card>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-4 gap-4">
           <Button
             variant="outline"
             className="flex flex-col items-center py-4"
@@ -141,6 +229,7 @@ export default function BabysitterDashboard() {
           <Button
             variant="outline"
             className="flex flex-col items-center py-4"
+            onClick={() => setLocation("/babysitter/messages")}
           >
             <MessageSquare className="h-5 w-5 mb-1" />
             <span className="text-xs">Messages</span>
@@ -148,16 +237,30 @@ export default function BabysitterDashboard() {
           <Button
             variant="outline"
             className="flex flex-col items-center py-4"
+            onClick={() => setLocation("/babysitter/earnings")}
           >
-            <MapPin className="h-5 w-5 mb-1" />
-            <span className="text-xs">Location</span>
+            <DollarSign className="h-5 w-5 mb-1" />
+            <span className="text-xs">Earnings</span>
+          </Button>
+          <Button
+            variant="outline"
+            className="flex flex-col items-center py-4"
+            onClick={() => setLocation("/babysitter/schedule")}
+          >
+            <Calendar className="h-5 w-5 mb-1" />
+            <span className="text-xs">Schedule</span>
           </Button>
         </div>
 
         {/* Upcoming Bookings */}
         <Card>
           <CardHeader>
-            <h3 className="font-medium">Upcoming Bookings</h3>
+            <div className="flex items-center justify-between">
+              <h3 className="font-medium">Upcoming Bookings</h3>
+              <Button variant="ghost" size="sm">
+                View All
+              </Button>
+            </div>
           </CardHeader>
           <CardContent className="p-4 space-y-4">
             {bookings?.filter(b => b.status === "pending").map((booking) => (
@@ -190,6 +293,42 @@ export default function BabysitterDashboard() {
             ))}
           </CardContent>
         </Card>
+
+        {/* Fixed Bottom Navigation */}
+        <div className="fixed bottom-0 left-0 right-0 bg-background border-t p-2 flex justify-between items-center">
+          <Button
+            variant="ghost"
+            className="flex-1 flex flex-col items-center py-2"
+            onClick={() => setLocation("/babysitter/dashboard")}
+          >
+            <User className="h-5 w-5" />
+            <span className="text-xs">Home</span>
+          </Button>
+          <Button
+            variant="ghost"
+            className="flex-1 flex flex-col items-center py-2"
+            onClick={() => setLocation("/babysitter/messages")}
+          >
+            <MessageSquare className="h-5 w-5" />
+            <span className="text-xs">Messages</span>
+          </Button>
+          <Button
+            variant="ghost"
+            className="flex-1 flex flex-col items-center py-2"
+            onClick={() => setLocation("/babysitter/earnings")}
+          >
+            <DollarSign className="h-5 w-5" />
+            <span className="text-xs">Earnings</span>
+          </Button>
+          <Button
+            variant="ghost"
+            className="flex-1 flex flex-col items-center py-2"
+            onClick={() => setLocation("/babysitter/account")}
+          >
+            <Settings className="h-5 w-5" />
+            <span className="text-xs">Account</span>
+          </Button>
+        </div>
       </motion.div>
     </MobileLayout>
   );
