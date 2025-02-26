@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import { MobileLayout } from "@/components/layout/mobile-layout";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import IdVerificationStep from "./steps/id-verification";
@@ -73,23 +72,33 @@ export default function ParentProfileSetup() {
   };
 
   return (
-    <MobileLayout>
+    <div className="min-h-screen bg-background">
+      {/* Fixed progress bar */}
       <div className="fixed top-0 left-0 right-0 z-10">
         <Progress value={progress} className="h-1" />
       </div>
 
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={currentStep}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          transition={{ duration: 0.2 }}
-          className="min-h-screen pt-4"
-        >
-          {renderStep()}
-        </motion.div>
-      </AnimatePresence>
-    </MobileLayout>
+      {/* Main content area */}
+      <div className="px-4 pt-8">
+        <div className="text-center mb-8">
+          <h1 className="text-2xl font-semibold">Complete Your Profile</h1>
+          <p className="text-muted-foreground mt-2">
+            Add your family details and verification documents
+          </p>
+        </div>
+
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentStep}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.2 }}
+          >
+            {renderStep()}
+          </motion.div>
+        </AnimatePresence>
+      </div>
+    </div>
   );
 }
