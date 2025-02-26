@@ -15,8 +15,10 @@ import ParentProfileSetup from "@/pages/parent/profile-setup";
 import BabysitterDashboard from "@/pages/babysitter/dashboard";
 import BabysitterProfile from "@/pages/babysitter/profile";
 import BabysitterSettings from "@/pages/babysitter/settings";
-import SecurityPage from "@/pages/babysitter/settings/security";
-import PrivacyPage from "@/pages/babysitter/settings/privacy";
+import BabysitterSecurity from "@/pages/babysitter/security";
+import BabysitterPrivacy from "@/pages/babysitter/privacy";
+import BabysitterPayments from "@/pages/babysitter/payments";
+import BabysitterHelp from "@/pages/babysitter/help";
 import BabysitterNotifications from "@/pages/babysitter/notifications";
 import BabysitterMessages from "@/pages/babysitter/messages";
 import BookingPage from "@/pages/parent/booking/[id]";
@@ -37,8 +39,10 @@ function Router() {
       <ProtectedRoute path="/babysitter/dashboard" component={BabysitterDashboard} />
       <ProtectedRoute path="/babysitter/profile" component={BabysitterProfile} />
       <ProtectedRoute path="/babysitter/settings" component={BabysitterSettings} />
-      <ProtectedRoute path="/babysitter/settings/security" component={SecurityPage} />
-      <ProtectedRoute path="/babysitter/settings/privacy" component={PrivacyPage} />
+      <ProtectedRoute path="/babysitter/security" component={BabysitterSecurity} />
+      <ProtectedRoute path="/babysitter/privacy" component={BabysitterPrivacy} />
+      <ProtectedRoute path="/babysitter/payments" component={BabysitterPayments} />
+      <ProtectedRoute path="/babysitter/help" component={BabysitterHelp} />
       <ProtectedRoute path="/babysitter/notifications" component={BabysitterNotifications} />
       <ProtectedRoute path="/babysitter/messages" component={BabysitterMessages} />
       <Route component={NotFound} />
