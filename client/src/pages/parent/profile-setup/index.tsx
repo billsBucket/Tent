@@ -4,9 +4,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { MobileLayout } from "@/components/layout/mobile-layout";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { ChevronRight, CheckCircle } from "lucide-react";
+import { CheckCircle } from "lucide-react";
 import IdVerificationStep from "./steps/id-verification";
 import FaceVerificationStep from "./steps/face-verification";
 import AddressVerificationStep from "./steps/address-verification";
@@ -85,39 +84,55 @@ export default function ParentProfileSetup() {
 
   return (
     <MobileLayout className="flex flex-col min-h-screen bg-background">
-      <div className="fixed top-0 left-0 right-0 z-10 bg-background/80 backdrop-blur-sm p-4 space-y-4">
-        <div className="text-center space-y-2">
-          <h1 className="text-2xl font-bold">Complete Your Profile</h1>
-          <p className="text-muted-foreground">Step {currentStepIndex + 1} of {steps.length}</p>
+      {/* Fixed header with progress */}
+      <div className="fixed top-0 left-0 right-0 z-10 bg-background/80 backdrop-blur-sm p-4">
+        <div className="text-center mb-4">
+          <h1 className="text-2xl font-bold">Profile Setup</h1>
+          <p className="text-sm text-muted-foreground">Step {currentStepIndex + 1} of {steps.length}</p>
         </div>
 
-        <Progress value={progress} className="h-2" />
+        <Progress value={progress} className="h-2 mb-4" />
 
-        <div className="flex justify-between overflow-x-auto py-2 gap-2">
+        {/* Step indicators */}
+        <div className="flex flex-col space-y-2">
           {steps.map((step, index) => {
             const isCompleted = completedSteps.includes(step.id);
             const isCurrent = currentStep === step.id;
 
             return (
-              <Badge
+              <div 
                 key={step.id}
-                variant={isCurrent ? "default" : isCompleted ? "secondary" : "outline"}
-                className={`whitespace-nowrap ${
-                  isCurrent ? "ring-2 ring-primary" : ""
-                } ${
-                  isCompleted ? "bg-primary/20" : ""
+                className={`flex items-center p-2 rounded-lg transition-colors ${
+                  isCurrent ? "bg-primary/10" : 
+                  isCompleted ? "bg-primary/5" : 
+                  "bg-background"
                 }`}
               >
-                <span className="mr-1">{step.icon}</span>
-                {step.label}
-                {isCompleted && <CheckCircle className="w-4 h-4 ml-1" />}
-              </Badge>
+                <div 
+                  className={`w-8 h-8 rounded-full flex items-center justify-center mr-3 ${
+                    isCurrent ? "bg-primary text-primary-foreground" :
+                    isCompleted ? "bg-primary/20 text-primary" :
+                    "bg-muted text-muted-foreground"
+                  }`}
+                >
+                  {isCompleted ? <CheckCircle className="w-5 h-5" /> : index + 1}
+                </div>
+                <span className={`flex-1 ${isCurrent ? "font-medium" : ""}`}>
+                  {step.icon} {step.label}
+                </span>
+                {isCompleted && (
+                  <Badge variant="secondary" className="ml-2">
+                    Complete
+                  </Badge>
+                )}
+              </div>
             );
           })}
         </div>
       </div>
 
-      <div className="flex-1 pt-36 pb-4 px-4">
+      {/* Content area */}
+      <div className="flex-1 pt-[280px] pb-4 px-4">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentStep}
