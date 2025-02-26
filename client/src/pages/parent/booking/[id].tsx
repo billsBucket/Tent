@@ -8,11 +8,12 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import ServiceTypeSelector from "@/components/booking/ServiceTypeSelector";
 import GoogleMapComponent from "@/components/maps/GoogleMapComponent";
-import { ArrowLeft, Clock, Shield } from "lucide-react";
+import { ArrowLeft, Clock, Shield, DollarSign } from "lucide-react";
 import type { User, Booking } from "@shared/schema";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { PaymentWrapper } from "@/components/payment/PaymentWrapper";
 
 export default function BookingPage() {
   const { id } = useParams();
@@ -21,6 +22,7 @@ export default function BookingPage() {
   const searchParams = new URLSearchParams(window.location.search);
   const address = searchParams.get("address");
 
+  const [isPaymentVisible, setIsPaymentVisible] = useState(false);
   const [selectedService, setSelectedService] = useState<{
     id: string;
     name: string;
@@ -82,7 +84,7 @@ export default function BookingPage() {
     return baseTotal + childrenFee;
   };
 
-  const handleBookNow = () => {
+  const handlePaymentSuccess = () => {
     if (!selectedService || !babysitter) return;
 
     const startTime = new Date();
@@ -214,18 +216,29 @@ export default function BookingPage() {
           </CardContent>
         </Card>
 
-        <Button
-          className="w-full"
-          size="lg"
-          disabled={!selectedService || bookingMutation.isPending}
-          onClick={handleBookNow}
-        >
-          {bookingMutation.isPending ? (
-            <>Processing...</>
-          ) : (
-            <>Confirm Booking · ${calculateTotal()}</>
-          )}
-        </Button>
+        {isPaymentVisible ? (
+          <PaymentWrapper
+            amount={calculateTotal()}
+            onSuccess={handlePaymentSuccess}
+            onError={(error) => {
+              toast({
+                title: "Payment failed",
+                description: error,
+                variant: "destructive",
+              });
+            }}
+          />
+        ) : (
+          <Button
+            className="w-full"
+            size="lg"
+            disabled={!selectedService}
+            onClick={() => setIsPaymentVisible(true)}
+          >
+            <DollarSign className="w-4 h-4 mr-2" />
+            Proceed to Payment · ${calculateTotal()}
+          </Button>
+        )}
       </motion.div>
     </MobileLayout>
   );

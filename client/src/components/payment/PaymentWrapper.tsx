@@ -12,7 +12,7 @@ interface PaymentWrapperProps {
   onError: (error: string) => void;
 }
 
-export default function PaymentWrapper({ amount, onSuccess, onError }: PaymentWrapperProps) {
+export function PaymentWrapper({ amount, onSuccess, onError }: PaymentWrapperProps) {
   const [clientSecret, setClientSecret] = useState("");
 
   useEffect(() => {
@@ -60,3 +60,5 @@ export default function PaymentWrapper({ amount, onSuccess, onError }: PaymentWr
     </Card>
   );
 }
+
+export default PaymentWrapper;
