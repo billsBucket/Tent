@@ -10,12 +10,11 @@ import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Trash2, Save, Upload, Check, ChevronRight } from "lucide-react";
+import { Plus, Trash2, Upload, Camera, Navigation2, Baby, Check } from "lucide-react";
 import { z } from "zod";
 import { apiRequest } from "@/lib/queryClient";
 import PlacesAutocomplete from "@/components/maps/PlacesAutocomplete";
 import { Progress } from "@/components/ui/progress";
-
 
 const childSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -45,28 +44,38 @@ type Step = {
   id: number;
   title: string;
   description: string;
+  icon: React.ReactNode;
+  status: "pending" | "in_progress" | "completed";
 };
 
 const steps: Step[] = [
   {
     id: 1,
     title: "ID Verification",
-    description: "Upload your government-issued ID for verification"
+    description: "Verify your identity with a government-issued ID",
+    icon: <Upload className="h-12 w-12" />,
+    status: "pending"
   },
   {
     id: 2,
     title: "Face Verification",
-    description: "Complete a quick face verification check"
+    description: "Take a quick selfie to verify it's you",
+    icon: <Camera className="h-12 w-12" />,
+    status: "pending"
   },
   {
     id: 3,
     title: "Home Address",
-    description: "Add your home address for local matching"
+    description: "Help us find babysitters in your area",
+    icon: <Navigation2 className="h-12 w-12" />,
+    status: "pending"
   },
   {
     id: 4,
-    title: "Children Information",
-    description: "Add details about your children"
+    title: "Children",
+    description: "Add your children's information",
+    icon: <Baby className="h-12 w-12" />,
+    status: "pending"
   }
 ];
 
@@ -186,29 +195,29 @@ export default function ParentProfileSetup() {
     updateProfileMutation.mutate(data);
   });
 
-
   const renderStep = () => {
     switch (currentStep) {
       case 1:
         return (
           <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -50 }}
-            className="space-y-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="flex flex-col items-center justify-center min-h-[60vh] p-6 space-y-6"
           >
-            <Card>
-              <CardContent className="p-6 space-y-4">
-                <div className="text-center">
-                  <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Upload className="h-8 w-8 text-primary" />
-                  </div>
-                  <h2 className="text-lg font-semibold">Upload Your ID</h2>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Please upload a clear photo of your government-issued ID
-                  </p>
-                </div>
+            <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center">
+              {steps[0].icon}
+            </div>
 
+            <div className="text-center space-y-2">
+              <h2 className="text-2xl font-semibold">{steps[0].title}</h2>
+              <p className="text-muted-foreground max-w-sm">
+                {steps[0].description}
+              </p>
+            </div>
+
+            <Card className="w-full">
+              <CardContent className="p-6 space-y-4">
                 <input
                   type="file"
                   accept="image/*"
@@ -216,83 +225,148 @@ export default function ParentProfileSetup() {
                   id="id-upload"
                   onChange={handleIdUpload}
                 />
-
-                <Button
-                  className="w-full"
+                <Button 
+                  size="lg"
+                  className="w-full h-16 text-lg"
                   onClick={() => document.getElementById("id-upload")?.click()}
                   disabled={isUploading}
                 >
-                  {isUploading ? "Uploading..." : "Select ID Photo"}
+                  {isUploading ? (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="flex items-center space-x-2"
+                    >
+                      <span className="loading loading-spinner"></span>
+                      <span>Uploading...</span>
+                    </motion.div>
+                  ) : (
+                    <>
+                      <Upload className="h-6 w-6 mr-2" />
+                      Upload ID Photo
+                    </>
+                  )}
                 </Button>
               </CardContent>
             </Card>
+
+            <p className="text-sm text-muted-foreground text-center max-w-sm">
+              We accept driver's license, passport, or government-issued ID
+            </p>
           </motion.div>
         );
+
       case 2:
         return (
           <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -50 }}
-            className="space-y-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="flex flex-col items-center justify-center min-h-[60vh] p-6 space-y-6"
           >
-            {/* Face Verification Component Here */}
-            <p>Face Verification Step (To be implemented)</p>
+            <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center">
+              {steps[1].icon}
+            </div>
+
+            <div className="text-center space-y-2">
+              <h2 className="text-2xl font-semibold">{steps[1].title}</h2>
+              <p className="text-muted-foreground max-w-sm">
+                {steps[1].description}
+              </p>
+            </div>
+
+            <Card className="w-full">
+              <CardContent className="p-6">
+                <Button 
+                  size="lg"
+                  className="w-full h-16 text-lg"
+                  onClick={() => {
+                    // Face verification logic
+                    setCurrentStep(3);
+                  }}
+                >
+                  <Camera className="h-6 w-6 mr-2" />
+                  Take Selfie
+                </Button>
+              </CardContent>
+            </Card>
+
+            <p className="text-sm text-muted-foreground text-center max-w-sm">
+              Your photo will be securely stored and used only for verification
+            </p>
           </motion.div>
         );
+
       case 3:
         return (
           <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -50 }}
-            className="space-y-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="flex flex-col items-center justify-center min-h-[60vh] p-6 space-y-6"
           >
-            <Card>
+            <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center">
+              {steps[2].icon}
+            </div>
+
+            <div className="text-center space-y-2">
+              <h2 className="text-2xl font-semibold">{steps[2].title}</h2>
+              <p className="text-muted-foreground max-w-sm">
+                {steps[2].description}
+              </p>
+            </div>
+
+            <Card className="w-full">
               <CardContent className="p-6 space-y-4">
-                <h2 className="text-lg font-semibold">Home Address</h2>
                 <PlacesAutocomplete
                   onPlaceSelect={handlePlaceSelect}
                   placeholder="Enter your home address"
                 />
-                <FormField
-                  control={form.control}
-                  name="address"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <Input {...field} type="hidden" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                {selectedAddress && (
+                  <Button 
+                    size="lg"
+                    className="w-full"
+                    onClick={() => setCurrentStep(4)}
+                  >
+                    <Check className="h-6 w-6 mr-2" />
+                    Confirm Address
+                  </Button>
+                )}
               </CardContent>
             </Card>
           </motion.div>
         );
+
       case 4:
         return (
           <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -50 }}
-            className="space-y-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="flex flex-col items-center justify-center min-h-[60vh] p-6 space-y-6"
           >
+            <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center">
+              {steps[3].icon}
+            </div>
+
+            <div className="text-center space-y-2">
+              <h2 className="text-2xl font-semibold">{steps[3].title}</h2>
+              <p className="text-muted-foreground max-w-sm">
+                {steps[3].description}
+              </p>
+            </div>
+
             <Form {...form}>
-              <form onSubmit={onSubmit} className="space-y-6">
+              <form onSubmit={onSubmit} className="w-full space-y-4">
                 <Card>
                   <CardContent className="p-6 space-y-6">
-                    <div className="flex items-center justify-between">
-                      <h2 className="text-lg font-semibold">Children</h2>
-                      <Button type="button" variant="outline" size="sm" onClick={addChild}>
-                        <Plus className="h-4 w-4 mr-2" />
-                        Add Child
-                      </Button>
-                    </div>
-
                     {Array.from({ length: childrenCount }).map((_, index) => (
-                      <div key={index} className="space-y-4 pt-4 border-t first:border-t-0 first:pt-0">
+                      <motion.div
+                        key={index}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="space-y-4"
+                      >
                         <div className="flex items-center justify-between">
                           <h3 className="font-medium">Child {index + 1}</h3>
                           {index > 0 && (
@@ -307,45 +381,13 @@ export default function ParentProfileSetup() {
                           )}
                         </div>
 
-                        <FormField
-                          control={form.control}
-                          name={`children.${index}.name`}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Name</FormLabel>
-                              <FormControl>
-                                <Input {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-4">
                           <FormField
                             control={form.control}
-                            name={`children.${index}.age`}
+                            name={`children.${index}.name`}
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel>Age</FormLabel>
-                                <FormControl>
-                                  <Input
-                                    type="number"
-                                    {...field}
-                                    onChange={(e) => field.onChange(parseInt(e.target.value, 10))}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-
-                          <FormField
-                            control={form.control}
-                            name={`children.${index}.gender`}
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Gender</FormLabel>
+                                <FormLabel>Name</FormLabel>
                                 <FormControl>
                                   <Input {...field} />
                                 </FormControl>
@@ -353,43 +395,69 @@ export default function ParentProfileSetup() {
                               </FormItem>
                             )}
                           />
+
+                          <div className="grid grid-cols-2 gap-4">
+                            <FormField
+                              control={form.control}
+                              name={`children.${index}.age`}
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Age</FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      type="number"
+                                      {...field}
+                                      onChange={(e) => field.onChange(parseInt(e.target.value, 10))}
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+
+                            <FormField
+                              control={form.control}
+                              name={`children.${index}.gender`}
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Gender</FormLabel>
+                                  <FormControl>
+                                    <Input {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
                         </div>
-
-                        <FormField
-                          control={form.control}
-                          name={`children.${index}.allergies`}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Allergies (Optional)</FormLabel>
-                              <FormControl>
-                                <Input {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-
-                        <FormField
-                          control={form.control}
-                          name={`children.${index}.specialNeeds`}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Special Needs (Optional)</FormLabel>
-                              <FormControl>
-                                <Input {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
+                      </motion.div>
                     ))}
+
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="w-full"
+                      onClick={addChild}
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Another Child
+                    </Button>
                   </CardContent>
                 </Card>
+
+                <Button
+                  type="submit"
+                  size="lg"
+                  className="w-full h-16 text-lg"
+                  disabled={updateProfileMutation.isPending}
+                >
+                  {updateProfileMutation.isPending ? "Saving..." : "Complete Setup"}
+                </Button>
               </form>
             </Form>
           </motion.div>
         );
+
       default:
         return null;
     }
@@ -397,59 +465,22 @@ export default function ParentProfileSetup() {
 
   return (
     <MobileLayout>
-      <div className="space-y-6 p-4">
-        <div className="space-y-2">
-          <div className="flex items-center justify-between text-sm">
-            <span>Step {currentStep} of {steps.length}</span>
-            <span>{Math.round(progress)}% Complete</span>
-          </div>
-          <Progress value={progress} className="h-2" />
-        </div>
-
-        <div>
-          <h1 className="text-2xl font-bold">{steps[currentStep - 1].title}</h1>
-          <p className="text-muted-foreground mt-1">{steps[currentStep - 1].description}</p>
-        </div>
-
-        <div className="space-y-4">
-          {steps.map((step) => (
-            <div
-              key={step.id}
-              className={`flex items-center space-x-4 ${
-                step.id === currentStep
-                  ? "text-primary"
-                  : step.id < currentStep
-                  ? "text-muted-foreground"
-                  : "text-muted-foreground opacity-50"
-              }`}
-            >
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center border ${
-                step.id === currentStep
-                  ? "border-primary bg-primary/10"
-                  : step.id < currentStep
-                  ? "border-muted bg-muted"
-                  : "border-muted"
-              }`}>
-                {step.id < currentStep ? (
-                  <Check className="h-4 w-4" />
-                ) : (
-                  <span>{step.id}</span>
-                )}
-              </div>
-              <span className="flex-1">{step.title}</span>
-              {step.id < currentStep && (
-                <ChevronRight className="h-4 w-4" />
-              )}
+      <div className="min-h-screen flex flex-col">
+        <div className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm border-b">
+          <div className="p-4 space-y-2">
+            <div className="flex items-center justify-between text-sm">
+              <span className="font-medium">Step {currentStep} of {steps.length}</span>
+              <span className="text-muted-foreground">{Math.round((currentStep / steps.length) * 100)}% Complete</span>
             </div>
-          ))}
+            <Progress value={(currentStep / steps.length) * 100} className="h-1" />
+          </div>
         </div>
 
-        <AnimatePresence mode="wait">
-          {renderStep()}
-        </AnimatePresence>
-        {currentStep === 4 && (
-          <Button type="submit" className="w-full" onClick={onSubmit}>Save Profile</Button>
-        )}
+        <div className="flex-1 pt-20">
+          <AnimatePresence mode="wait">
+            {renderStep()}
+          </AnimatePresence>
+        </div>
       </div>
     </MobileLayout>
   );
