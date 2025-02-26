@@ -11,7 +11,7 @@ interface LocationUpdate {
 interface SocketData {
   bookingId?: string;
   userId: number;
-  role: 'tracker' | 'watcher';
+  role: 'tracker' | 'watcher' | 'babysitter' | 'parent';
 }
 
 interface ChatMessage {
@@ -19,6 +19,7 @@ interface ChatMessage {
   recipientId: number;
   content: string;
   timestamp: number;
+  status: 'sent' | 'delivered' | 'read';
 }
 
 interface Notification {
@@ -33,12 +34,15 @@ export function setupWebSocket(httpServer: HttpServer) {
   const io = new Server(httpServer, {
     path: '/api/socket',
     cors: {
-      origin: process.env.NODE_ENV === 'production' 
-        ? false 
+      origin: process.env.NODE_ENV === 'production'
+        ? false
         : ['http://localhost:3000'],
       credentials: true
     }
   });
+
+  // Store active connections
+  const activeUsers = new Map<number, Socket>();
 
   // Authentication middleware
   io.use((socket: Socket, next: (err?: Error) => void) => {
@@ -55,6 +59,9 @@ export function setupWebSocket(httpServer: HttpServer) {
   io.on('connection', (socket: Socket) => {
     const { userId, role, bookingId } = socket.data as SocketData;
     console.log(`Client connected - Role: ${role}, User: ${userId}`);
+
+    // Store user's socket connection
+    activeUsers.set(userId, socket);
 
     // Join user's personal room for direct messages and notifications
     socket.join(`user:${userId}`);
@@ -75,10 +82,48 @@ export function setupWebSocket(httpServer: HttpServer) {
     });
 
     // Handle chat messages
-    socket.on('send_message', (message: ChatMessage) => {
-      io.to(`user:${message.recipientId}`).emit('receive_message', {
+    socket.on('send_message', async (message: ChatMessage) => {
+      // Save message to database (implement this)
+      const savedMessage = {
         ...message,
-        senderId: userId
+        id: Date.now(), // Replace with actual DB id
+        status: 'sent'
+      };
+
+      // Send to recipient if online
+      const recipientSocket = activeUsers.get(message.recipientId);
+      if (recipientSocket) {
+        recipientSocket.emit('receive_message', {
+          ...savedMessage,
+          senderId: userId
+        });
+
+        // Update message status to delivered
+        savedMessage.status = 'delivered';
+        socket.emit('message_status', {
+          messageId: savedMessage.id,
+          status: 'delivered'
+        });
+      }
+
+      // Send back to sender with status
+      socket.emit('message_sent', savedMessage);
+    });
+
+    // Handle message status updates
+    socket.on('message_read', (messageIds: number[]) => {
+      // Update message status in database (implement this)
+      messageIds.forEach(messageId => {
+        // Find original sender and notify them
+        // This would come from the database in a real implementation
+        const senderId = 1; // Example
+        const senderSocket = activeUsers.get(senderId);
+        if (senderSocket) {
+          senderSocket.emit('message_status', {
+            messageId,
+            status: 'read'
+          });
+        }
       });
     });
 
@@ -96,7 +141,17 @@ export function setupWebSocket(httpServer: HttpServer) {
       });
     });
 
+    // Handle typing indicators
+    socket.on('typing_start', (recipientId: number) => {
+      io.to(`user:${recipientId}`).emit('typing_start', userId);
+    });
+
+    socket.on('typing_stop', (recipientId: number) => {
+      io.to(`user:${recipientId}`).emit('typing_stop', userId);
+    });
+
     socket.on('disconnect', () => {
+      activeUsers.delete(userId);
       if (bookingId) {
         socket.leave(`booking:${bookingId}`);
       }
