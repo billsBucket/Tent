@@ -217,42 +217,6 @@ export default function BabysitterDashboard() {
           </CardContent>
         </Card>
 
-        {/* Quick Actions */}
-        <div className="grid grid-cols-4 gap-4">
-          <Button
-            variant="outline"
-            className="flex flex-col items-center py-4"
-            onClick={() => setLocation("/babysitter/profile")}
-          >
-            <User className="h-5 w-5 mb-1 text-purple-500" />
-            <span className="text-xs">Profile</span>
-          </Button>
-          <Button
-            variant="outline"
-            className="flex flex-col items-center py-4"
-            onClick={() => setLocation("/babysitter/messages")}
-          >
-            <MessageSquare className="h-5 w-5 mb-1 text-blue-500" />
-            <span className="text-xs">Messages</span>
-          </Button>
-          <Button
-            variant="outline"
-            className="flex flex-col items-center py-4"
-            onClick={() => setLocation("/babysitter/earnings")}
-          >
-            <DollarSign className="h-5 w-5 mb-1 text-green-500" />
-            <span className="text-xs">Earnings</span>
-          </Button>
-          <Button
-            variant="outline"
-            className="flex flex-col items-center py-4"
-            onClick={() => setLocation("/babysitter/schedule")}
-          >
-            <Calendar className="h-5 w-5 mb-1 text-orange-500" />
-            <span className="text-xs">Schedule</span>
-          </Button>
-        </div>
-
         {/* Upcoming Bookings */}
         <Card>
           <CardHeader>
@@ -294,6 +258,43 @@ export default function BabysitterDashboard() {
             ))}
           </CardContent>
         </Card>
+
+
+        {/* Fixed Bottom Navigation */}
+        <div className="fixed bottom-0 left-0 right-0 bg-background border-t py-2 px-6 flex justify-between items-center">
+          <Button
+            variant="ghost"
+            className="flex flex-col items-center py-2"
+            onClick={() => setLocation("/babysitter/profile")}
+          >
+            <User className="h-5 w-5 text-purple-500" />
+            <span className="text-xs mt-1">Profile</span>
+          </Button>
+          <Button
+            variant="ghost"
+            className="flex flex-col items-center py-2"
+            onClick={() => setLocation("/babysitter/messages")}
+          >
+            <MessageSquare className="h-5 w-5 text-blue-500" />
+            <span className="text-xs mt-1">Messages</span>
+          </Button>
+          <Button
+            variant="ghost"
+            className="flex flex-col items-center py-2"
+            onClick={() => setLocation("/babysitter/earnings")}
+          >
+            <DollarSign className="h-5 w-5 text-green-500" />
+            <span className="text-xs mt-1">Earnings</span>
+          </Button>
+          <Button
+            variant="ghost"
+            className="flex flex-col items-center py-2"
+            onClick={() => setLocation("/babysitter/schedule")}
+          >
+            <Calendar className="h-5 w-5 text-orange-500" />
+            <span className="text-xs mt-1">Schedule</span>
+          </Button>
+        </div>
       </motion.div>
     </MobileLayout>
   );
