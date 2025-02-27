@@ -261,38 +261,38 @@ export default function BabysitterDashboard() {
 
 
         {/* Fixed Bottom Navigation */}
-        <div className="fixed bottom-0 left-0 right-0 bg-background border-t py-2 px-6 flex justify-between items-center">
+        <div className="fixed bottom-0 left-0 right-0 bg-background border-t py-3 flex justify-between items-center">
           <Button
             variant="ghost"
-            className="flex flex-col items-center py-2"
+            className="flex-1 flex flex-col items-center min-w-[80px] py-1 hover:bg-transparent"
             onClick={() => setLocation("/babysitter/profile")}
           >
-            <User className="h-5 w-5 text-purple-500" />
-            <span className="text-xs mt-1">Profile</span>
+            <User className="h-6 w-6 text-purple-500 mb-1" />
+            <span className="text-xs">Profile</span>
           </Button>
           <Button
             variant="ghost"
-            className="flex flex-col items-center py-2"
+            className="flex-1 flex flex-col items-center min-w-[80px] py-1 hover:bg-transparent"
             onClick={() => setLocation("/babysitter/messages")}
           >
-            <MessageSquare className="h-5 w-5 text-blue-500" />
-            <span className="text-xs mt-1">Messages</span>
+            <MessageSquare className="h-6 w-6 text-blue-500 mb-1" />
+            <span className="text-xs">Messages</span>
           </Button>
           <Button
             variant="ghost"
-            className="flex flex-col items-center py-2"
+            className="flex-1 flex flex-col items-center min-w-[80px] py-1 hover:bg-transparent"
             onClick={() => setLocation("/babysitter/earnings")}
           >
-            <DollarSign className="h-5 w-5 text-green-500" />
-            <span className="text-xs mt-1">Earnings</span>
+            <DollarSign className="h-6 w-6 text-green-500 mb-1" />
+            <span className="text-xs">Earnings</span>
           </Button>
           <Button
             variant="ghost"
-            className="flex flex-col items-center py-2"
+            className="flex-1 flex flex-col items-center min-w-[80px] py-1 hover:bg-transparent"
             onClick={() => setLocation("/babysitter/schedule")}
           >
-            <Calendar className="h-5 w-5 text-orange-500" />
-            <span className="text-xs mt-1">Schedule</span>
+            <Calendar className="h-6 w-6 text-orange-500 mb-1" />
+            <span className="text-xs">Schedule</span>
           </Button>
         </div>
       </motion.div>
