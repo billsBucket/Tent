@@ -217,6 +217,42 @@ export default function BabysitterDashboard() {
           </CardContent>
         </Card>
 
+        {/* Quick Actions */}
+        <div className="grid grid-cols-4 gap-4">
+          <Button
+            variant="outline"
+            className="flex flex-col items-center py-4"
+            onClick={() => setLocation("/babysitter/profile")}
+          >
+            <User className="h-5 w-5 mb-1 text-purple-500" />
+            <span className="text-xs">Profile</span>
+          </Button>
+          <Button
+            variant="outline"
+            className="flex flex-col items-center py-4"
+            onClick={() => setLocation("/babysitter/messages")}
+          >
+            <MessageSquare className="h-5 w-5 mb-1 text-blue-500" />
+            <span className="text-xs">Messages</span>
+          </Button>
+          <Button
+            variant="outline"
+            className="flex flex-col items-center py-4"
+            onClick={() => setLocation("/babysitter/earnings")}
+          >
+            <DollarSign className="h-5 w-5 mb-1 text-green-500" />
+            <span className="text-xs">Earnings</span>
+          </Button>
+          <Button
+            variant="outline"
+            className="flex flex-col items-center py-4"
+            onClick={() => setLocation("/babysitter/schedule")}
+          >
+            <Calendar className="h-5 w-5 mb-1 text-orange-500" />
+            <span className="text-xs">Schedule</span>
+          </Button>
+        </div>
+
         {/* Upcoming Bookings */}
         <Card>
           <CardHeader>
@@ -258,43 +294,6 @@ export default function BabysitterDashboard() {
             ))}
           </CardContent>
         </Card>
-
-
-        {/* Fixed Bottom Navigation */}
-        <div className="fixed bottom-0 left-0 right-0 bg-background border-t py-3 flex justify-between items-center">
-          <Button
-            variant="ghost"
-            className="flex-1 flex flex-col items-center min-w-[80px] py-1 hover:bg-transparent"
-            onClick={() => setLocation("/babysitter/profile")}
-          >
-            <User className="h-6 w-6 text-purple-500 mb-1" />
-            <span className="text-xs">Profile</span>
-          </Button>
-          <Button
-            variant="ghost"
-            className="flex-1 flex flex-col items-center min-w-[80px] py-1 hover:bg-transparent"
-            onClick={() => setLocation("/babysitter/messages")}
-          >
-            <MessageSquare className="h-6 w-6 text-blue-500 mb-1" />
-            <span className="text-xs">Messages</span>
-          </Button>
-          <Button
-            variant="ghost"
-            className="flex-1 flex flex-col items-center min-w-[80px] py-1 hover:bg-transparent"
-            onClick={() => setLocation("/babysitter/earnings")}
-          >
-            <DollarSign className="h-6 w-6 text-green-500 mb-1" />
-            <span className="text-xs">Earnings</span>
-          </Button>
-          <Button
-            variant="ghost"
-            className="flex-1 flex flex-col items-center min-w-[80px] py-1 hover:bg-transparent"
-            onClick={() => setLocation("/babysitter/schedule")}
-          >
-            <Calendar className="h-6 w-6 text-orange-500 mb-1" />
-            <span className="text-xs">Schedule</span>
-          </Button>
-        </div>
       </motion.div>
     </MobileLayout>
   );
