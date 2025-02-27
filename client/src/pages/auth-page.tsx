@@ -18,6 +18,7 @@ export default function AuthPage() {
   const [, setLocation] = useLocation();
   const { user, loginMutation, registerMutation } = useAuth();
   const [step, setStep] = useState<"start" | "login" | "register">("start");
+  const [isPhoneVerified, setIsPhoneVerified] = useState(false);
 
   const loginForm = useForm({
     resolver: zodResolver(insertUserSchema.pick({ username: true, password: true })),
@@ -78,7 +79,7 @@ export default function AuthPage() {
             </div>
 
             <div className="text-center space-y-2">
-              <h1 className="text-3xl font-bold">Welcome to BabySitterGo - Tent</h1>
+              <h1 className="text-3xl font-bold">Welcome to BabySitterGo</h1>
               <p className="text-muted-foreground">
                 Sign in or create an account to get started
               </p>
@@ -86,8 +87,7 @@ export default function AuthPage() {
 
             <div className="w-full space-y-4 mt-8">
               <Button 
-                variant="outline"
-                className="w-full h-14 text-lg bg-white text-black hover:bg-gray-100"
+                className="w-full h-14 text-lg"
                 onClick={() => setStep("login")}
               >
                 Sign In
@@ -95,7 +95,7 @@ export default function AuthPage() {
               </Button>
               <Button 
                 variant="outline"
-                className="w-full h-14 text-lg bg-white text-black hover:bg-gray-100"
+                className="w-full h-14 text-lg"
                 onClick={() => setStep("register")}
               >
                 Create Account
@@ -161,7 +161,7 @@ export default function AuthPage() {
 
                 <Button 
                   type="submit" 
-                  className="w-full h-14 text-lg mt-6 bg-white text-black hover:bg-gray-100" 
+                  className="w-full h-14 text-lg mt-6" 
                   disabled={loginMutation.isPending}
                 >
                   {loginMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -202,7 +202,7 @@ export default function AuthPage() {
             <div className="space-y-2">
               <h1 className="text-2xl font-bold">Create account</h1>
               <p className="text-muted-foreground">
-                Join BabySitterGo - Tent to get started
+                Join BabySitterGo to get started
               </p>
             </div>
 
@@ -299,7 +299,7 @@ export default function AuthPage() {
 
                 <Button 
                   type="submit" 
-                  className="w-full h-14 text-lg mt-6 bg-white text-black hover:bg-gray-100"
+                  className="w-full h-14 text-lg mt-6"
                   disabled={registerMutation.isPending}
                 >
                   {registerMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
