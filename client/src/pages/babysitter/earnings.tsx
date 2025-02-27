@@ -14,12 +14,34 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
+import {
   ArrowLeft,
   DollarSign,
   Clock,
   Calendar,
   ArrowDownToLine,
+  ArrowUpToLine,
+  Download,
 } from "lucide-react";
+
+// Simulated data for the chart
+const chartData = [
+  { day: 'Mon', earnings: 120 },
+  { day: 'Tue', earnings: 150 },
+  { day: 'Wed', earnings: 180 },
+  { day: 'Thu', earnings: 140 },
+  { day: 'Fri', earnings: 200 },
+  { day: 'Sat', earnings: 220 },
+  { day: 'Sun', earnings: 180 },
+];
 
 export default function BabysitterEarnings() {
   const [, setLocation] = useLocation();
@@ -30,6 +52,7 @@ export default function BabysitterEarnings() {
   const lastWeekEarnings = 760;
   const totalHours = 32;
   const completedBookings = 12;
+  const earningTrend = ((currentWeekEarnings - lastWeekEarnings) / lastWeekEarnings) * 100;
 
   const transactions = [
     {
@@ -38,6 +61,9 @@ export default function BabysitterEarnings() {
       amount: 120,
       status: "completed",
       description: "Babysitting for Smith family",
+      hours: 4,
+      rate: 30,
+      bonus: 0,
     },
     {
       id: 2,
@@ -45,6 +71,9 @@ export default function BabysitterEarnings() {
       amount: 85,
       status: "completed",
       description: "Babysitting for Johnson family",
+      hours: 3,
+      rate: 28,
+      bonus: 1,
     },
     {
       id: 3,
@@ -52,6 +81,9 @@ export default function BabysitterEarnings() {
       amount: 150,
       status: "completed",
       description: "Babysitting for Williams family",
+      hours: 5,
+      rate: 30,
+      bonus: 0,
     },
   ];
 
@@ -74,12 +106,16 @@ export default function BabysitterEarnings() {
             </Button>
             <h1 className="font-semibold">Earnings</h1>
           </div>
+          <Button variant="outline" size="sm">
+            <Download className="h-4 w-4 mr-2" />
+            Export
+          </Button>
         </div>
 
         {/* Period Selector */}
         <div className="px-4">
           <Select defaultValue={selectedPeriod} onValueChange={setSelectedPeriod}>
-            <SelectTrigger>
+            <SelectTrigger className="w-full">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -87,6 +123,7 @@ export default function BabysitterEarnings() {
               <SelectItem value="last-week">Last Week</SelectItem>
               <SelectItem value="this-month">This Month</SelectItem>
               <SelectItem value="last-month">Last Month</SelectItem>
+              <SelectItem value="custom">Custom Range</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -99,17 +136,47 @@ export default function BabysitterEarnings() {
                 {format(startOfWeek(new Date()), "MMM d")} - {format(endOfWeek(new Date()), "MMM d")}
               </p>
               <h2 className="text-4xl font-bold text-green-600 my-2">${currentWeekEarnings}</h2>
-              <div className="flex justify-center items-center space-x-1 text-sm text-green-600">
-                <ArrowDownToLine className="h-4 w-4" />
-                <span>+10.5% from last week</span>
+              <div className="flex justify-center items-center space-x-1 text-sm">
+                {earningTrend >= 0 ? (
+                  <ArrowUpToLine className="h-4 w-4 text-green-600" />
+                ) : (
+                  <ArrowDownToLine className="h-4 w-4 text-red-600" />
+                )}
+                <span className={earningTrend >= 0 ? "text-green-600" : "text-red-600"}>
+                  {Math.abs(earningTrend).toFixed(1)}% from last week
+                </span>
               </div>
+            </div>
+
+            <div className="mt-6 h-48">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={chartData}>
+                  <defs>
+                    <linearGradient id="colorEarnings" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#22c55e" stopOpacity={0.2}/>
+                      <stop offset="95%" stopColor="#22c55e" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                  <XAxis dataKey="day" />
+                  <YAxis />
+                  <Tooltip />
+                  <Area
+                    type="monotone"
+                    dataKey="earnings"
+                    stroke="#22c55e"
+                    fillOpacity={1}
+                    fill="url(#colorEarnings)"
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
             </div>
 
             <div className="grid grid-cols-3 gap-4 mt-6">
               <div className="text-center">
                 <DollarSign className="h-6 w-6 mx-auto mb-1 text-green-500" />
-                <div className="text-lg font-semibold">${lastWeekEarnings}</div>
-                <p className="text-xs text-muted-foreground">Last Week</p>
+                <div className="text-lg font-semibold">${(currentWeekEarnings / totalHours).toFixed(0)}</div>
+                <p className="text-xs text-muted-foreground">Per Hour</p>
               </div>
               <div className="text-center">
                 <Clock className="h-6 w-6 mx-auto mb-1 text-blue-500" />
@@ -121,15 +188,6 @@ export default function BabysitterEarnings() {
                 <div className="text-lg font-semibold">{completedBookings}</div>
                 <p className="text-xs text-muted-foreground">Bookings</p>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Graph Placeholder */}
-        <Card>
-          <CardContent className="p-4">
-            <div className="h-48 bg-muted/20 rounded-lg flex items-center justify-center">
-              <p className="text-muted-foreground">Earnings Graph</p>
             </div>
           </CardContent>
         </Card>
@@ -152,15 +210,23 @@ export default function BabysitterEarnings() {
               >
                 <div>
                   <p className="font-medium">{transaction.description}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {format(transaction.date, "MMM d, yyyy")}
-                  </p>
+                  <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                    <span>{format(transaction.date, "MMM d, yyyy")}</span>
+                    <span>•</span>
+                    <span>{transaction.hours} hours</span>
+                    {transaction.bonus > 0 && (
+                      <>
+                        <span>•</span>
+                        <Badge variant="outline" className="text-green-500 bg-green-50">
+                          +${transaction.bonus} bonus
+                        </Badge>
+                      </>
+                    )}
+                  </div>
                 </div>
                 <div className="text-right">
                   <p className="font-medium text-green-600">+${transaction.amount}</p>
-                  <Badge variant="outline" className="text-green-500 bg-green-50">
-                    {transaction.status}
-                  </Badge>
+                  <p className="text-sm text-muted-foreground">${transaction.rate}/hr</p>
                 </div>
               </div>
             ))}
