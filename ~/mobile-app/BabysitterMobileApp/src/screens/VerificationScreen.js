@@ -24,12 +24,10 @@ export default function VerificationScreen() {
   const inputRefs = useRef([]);
 
   useEffect(() => {
-    // Auto focus first input
     inputRefs.current[0]?.focus();
   }, []);
 
   useEffect(() => {
-    // Validate code automatically when complete
     if (code.length === OTP_LENGTH) {
       validateCode(code);
     }
@@ -68,7 +66,6 @@ export default function VerificationScreen() {
   };
 
   const handleResendCode = () => {
-    // TODO: Implement resend code logic
     setCode('');
     setError('');
     inputRefs.current[0]?.focus();
