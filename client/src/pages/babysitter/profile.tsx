@@ -42,18 +42,18 @@ export default function BabysitterProfile() {
           <h1 className="ml-4 font-semibold">Profile</h1>
         </div>
 
-        {/* Profile Header */}
+        {/* Profile Header with Background */}
         <div className="relative">
           <div className="h-32 bg-primary/10" />
-          <div className="absolute -bottom-16 left-1/2 -translate-x-1/2">
-            <div className="relative">
-              <Avatar className="h-32 w-32 border-4 border-background">
+          <div className="px-4">
+            <div className="relative -mt-16 mb-20"> {/* Increased bottom margin */}
+              <Avatar className="h-32 w-32 border-4 border-background mx-auto">
                 <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.username}`} />
                 <AvatarFallback>{user?.fullName[0]}</AvatarFallback>
               </Avatar>
               <Button
                 size="icon"
-                className="absolute bottom-0 right-0 rounded-full bg-primary"
+                className="absolute bottom-0 right-1/2 translate-x-12 rounded-full bg-primary"
               >
                 <Camera className="h-4 w-4 text-white" />
               </Button>
@@ -62,13 +62,15 @@ export default function BabysitterProfile() {
         </div>
 
         {/* Basic Info */}
-        <Card className="mt-20">
+        <Card>
           <CardContent className="p-6 text-center">
             <h2 className="text-xl font-semibold">{user?.fullName}</h2>
-            <div className="flex items-center justify-center mt-2">
-              <Star className="h-4 w-4 text-yellow-500 mr-1" />
-              <span className="font-medium">4.8</span>
-              <span className="text-muted-foreground ml-1">(124 reviews)</span>
+            <div className="flex items-center justify-center mt-2 space-x-2">
+              <div className="flex items-center">
+                <Star className="h-4 w-4 text-yellow-500" />
+                <span className="font-medium ml-1">4.8</span>
+              </div>
+              <span className="text-muted-foreground">(124 reviews)</span>
             </div>
             <div className="flex justify-center gap-2 mt-4">
               <Badge variant="secondary" className="bg-blue-100 text-blue-700">
