@@ -6,9 +6,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/hooks/use-auth";
 import { MobileLayout } from "@/components/layout/mobile-layout";
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormMessage, FormLabel } from "@/components/ui/form";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
-import { ArrowLeft, Loader2, SmartphoneIcon } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ArrowLeft, Loader2, SmartphoneIcon, User } from "lucide-react";
 import { z } from "zod";
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
@@ -21,10 +23,20 @@ const otpSchema = z.object({
   otp: z.string().length(6, "Please enter the complete verification code"),
 });
 
+const registrationSchema = z.object({
+  userType: z.enum(["parent", "babysitter"], {
+    required_error: "Please select your user type",
+  }),
+  fullName: z.string().min(1, "Full name is required"),
+  email: z.string().email("Invalid email").optional(),
+});
+
+type Step = "phone" | "verify" | "register";
+
 export default function AuthPage() {
   const [, setLocation] = useLocation();
-  const { user, loginMutation } = useAuth();
-  const [step, setStep] = useState<"phone" | "verify">("phone");
+  const { user, loginMutation, registerMutation } = useAuth();
+  const [step, setStep] = useState<Step>("phone");
   const [isNewUser, setIsNewUser] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState("");
 
@@ -39,6 +51,15 @@ export default function AuthPage() {
     resolver: zodResolver(otpSchema),
     defaultValues: {
       otp: "",
+    },
+  });
+
+  const registrationForm = useForm({
+    resolver: zodResolver(registrationSchema),
+    defaultValues: {
+      userType: "parent",
+      fullName: "",
+      email: "",
     },
   });
 
@@ -60,9 +81,20 @@ export default function AuthPage() {
   });
 
   const onVerifySubmit = otpForm.handleSubmit(async (data) => {
-    loginMutation.mutate({
+    if (!isNewUser) {
+      loginMutation.mutate({
+        phoneNumber,
+        otp: data.otp,
+      });
+    } else {
+      setStep("register");
+    }
+  });
+
+  const onRegisterSubmit = registrationForm.handleSubmit(async (data) => {
+    registerMutation.mutate({
+      ...data,
       phoneNumber,
-      otp: data.otp,
     });
   });
 
@@ -227,6 +259,114 @@ export default function AuthPage() {
                     onClick={() => setStep("phone")}
                   >
                     Didn't receive code? Try again
+                  </Button>
+                </div>
+              </form>
+            </Form>
+          </motion.div>
+        );
+
+      case "register":
+        return (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="min-h-screen bg-background p-4"
+          >
+            <div className="flex items-center mb-8">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="-ml-3"
+                onClick={() => setStep("verify")}
+              >
+                <ArrowLeft className="h-5 w-5 mr-2" />
+                Back
+              </Button>
+            </div>
+
+            <div className="text-center mb-12">
+              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                <User className="h-8 w-8 text-primary" />
+              </div>
+              <h1 className="text-2xl font-semibold">Complete Your Profile</h1>
+              <p className="text-muted-foreground mt-2">
+                Tell us a bit about yourself
+              </p>
+            </div>
+
+            <Form {...registrationForm}>
+              <form onSubmit={onRegisterSubmit} className="space-y-6">
+                <div className="w-full max-w-[400px] mx-auto space-y-6">
+                  <FormField
+                    control={registrationForm.control}
+                    name="userType"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>I am a</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger className="h-12">
+                              <SelectValue placeholder="Select user type" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="parent">Parent</SelectItem>
+                            <SelectItem value="babysitter">Babysitter</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={registrationForm.control}
+                    name="fullName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Full Name</FormLabel>
+                        <FormControl>
+                          <Input 
+                            placeholder="Enter your full name"
+                            className="h-12"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={registrationForm.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email (Optional)</FormLabel>
+                        <FormControl>
+                          <Input 
+                            type="email"
+                            placeholder="Enter your email"
+                            className="h-12"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <Button
+                    type="submit"
+                    className="w-full h-12 text-base font-medium rounded-full"
+                    disabled={registerMutation.isPending}
+                  >
+                    {registerMutation.isPending && (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    )}
+                    Create Account
                   </Button>
                 </div>
               </form>
