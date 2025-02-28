@@ -15,6 +15,10 @@ import AuthScreen from './src/screens/AuthScreen';
 import VerificationScreen from './src/screens/VerificationScreen';
 import RegisterScreen from './src/screens/RegisterScreen';
 import DashboardScreen from './src/screens/DashboardScreen';
+import NotificationsScreen from './src/screens/NotificationsScreen';
+import MessagesScreen from './src/screens/MessagesScreen';
+import SettingsScreen from './src/screens/SettingsScreen';
+import TrackingScreen from './src/screens/booking/TrackingScreen';
 
 const Stack = createNativeStackNavigator();
 const queryClient = new QueryClient();
@@ -112,6 +116,38 @@ function AppNavigator() {
             title: 'Home',
             headerLeft: null,
             gestureEnabled: false,
+          }}
+        />
+        <Stack.Screen
+          name="Notifications"
+          component={NotificationsScreen}
+          options={{
+            title: 'Notifications',
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="Messages"
+          component={MessagesScreen}
+          options={{
+            title: 'Messages',
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="Settings"
+          component={SettingsScreen}
+          options={{
+            title: 'Settings',
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="BookingTracking"
+          component={TrackingScreen}
+          options={{
+            title: 'Track Booking',
+            headerShown: true, // Changed to true for visibility
           }}
         />
       </Stack.Navigator>
