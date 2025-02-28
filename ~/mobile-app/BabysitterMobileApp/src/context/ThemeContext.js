@@ -28,10 +28,8 @@ export const ThemeProvider = ({ children }) => {
       secondary: isDark ? '#404040' : '#f4f4f5',
       border: isDark ? '#404040' : '#e4e4e7',
       placeholder: isDark ? '#808080' : '#71717a',
-      // iOS specific colors
-      iosBackground: isDark ? '#000000' : '#F2F2F7',
-      iosGroupedBackground: isDark ? '#1C1C1E' : '#FFFFFF',
-      iosSystemGray: isDark ? '#8E8E93' : '#8E8E93',
+      card: isDark ? '#2a2a2a' : '#ffffff',
+      destructive: '#ef4444',
     },
     toggleTheme,
   };

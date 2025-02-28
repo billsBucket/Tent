@@ -10,7 +10,7 @@ export const ThemeToggle = () => {
     Animated.spring(translateX, {
       toValue: isDark ? 28 : 0,
       useNativeDriver: true,
-      bounciness: Platform.OS === 'ios' ? 4 : 8, // Less bouncy on iOS
+      bounciness: Platform.OS === 'ios' ? 4 : 8,
       speed: Platform.OS === 'ios' ? 12 : 8,
     }).start();
   }, [isDark]);
@@ -21,7 +21,7 @@ export const ThemeToggle = () => {
       style={[
         styles.container,
         { 
-          backgroundColor: isDark ? colors.iosSystemGray : colors.secondary,
+          backgroundColor: isDark ? colors.secondary : colors.border,
           ...Platform.select({
             ios: {
               shadowColor: '#000',

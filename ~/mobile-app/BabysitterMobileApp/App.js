@@ -37,25 +37,18 @@ function AppNavigator() {
           headerShown: true,
           headerRight: () => <ThemeToggle />,
           headerStyle: {
-            backgroundColor: Platform.select({
-              ios: colors.iosBackground,
-              android: colors.background,
-            }),
+            backgroundColor: colors.background,
           },
           headerTintColor: colors.text,
           headerShadowVisible: Platform.OS === 'ios',
           contentStyle: {
-            backgroundColor: Platform.select({
-              ios: colors.iosBackground,
-              android: colors.background,
-            }),
+            backgroundColor: colors.background,
           },
           ...Platform.select({
             ios: {
               headerBackTitle: 'Back',
               headerLargeTitle: true,
               headerTransparent: false,
-              headerBlurEffect: isDark ? 'dark' : 'light',
               animation: 'slide_from_right',
             },
             android: {
@@ -147,7 +140,7 @@ function AppNavigator() {
           component={TrackingScreen}
           options={{
             title: 'Track Booking',
-            headerShown: true, // Changed to true for visibility
+            headerShown: true,
           }}
         />
       </Stack.Navigator>
