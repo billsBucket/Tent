@@ -1,8 +1,9 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { StatusBar } from 'react-native';
+import { StatusBar, Platform } from 'react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 // Import screens
 import OnboardingScreen from './src/screens/OnboardingScreen';
@@ -22,24 +23,90 @@ function AppNavigator() {
 
   return (
     <>
-      <StatusBar barStyle={isDark ? "light-content" : "dark-content"} />
+      <StatusBar 
+        barStyle={isDark ? "light-content" : "dark-content"}
+        backgroundColor={Platform.OS === 'ios' ? 'transparent' : colors.background}
+      />
       <Stack.Navigator 
         screenOptions={{
-          headerShown: true, // Header is now shown
+          headerShown: false,
           headerRight: () => <ThemeToggle />,
           headerStyle: {
-            backgroundColor: colors.background,
+            backgroundColor: Platform.select({
+              ios: colors.iosBackground,
+              android: colors.background,
+            }),
           },
           headerTintColor: colors.text,
+          headerShadowVisible: Platform.OS === 'ios',
           contentStyle: {
-            backgroundColor: colors.background,
+            backgroundColor: Platform.select({
+              ios: colors.iosBackground,
+              android: colors.background,
+            }),
           },
+          ...Platform.select({
+            ios: {
+              headerBackTitle: 'Back',
+              headerLargeTitle: true,
+              headerTransparent: false,
+              headerBlurEffect: isDark ? 'dark' : 'light',
+              animation: 'slide_from_right',
+            },
+            android: {
+              headerElevation: 4,
+              animation: 'fade_from_bottom',
+            },
+          }),
         }}
       >
-        <Stack.Screen name="Onboarding" component={OnboardingScreen} />
-        <Stack.Screen name="Auth" component={AuthScreen} />
-        <Stack.Screen name="Verification" component={VerificationScreen} />
-        <Stack.Screen name="Register" component={RegisterScreen} />
+        <Stack.Screen 
+          name="Onboarding" 
+          component={OnboardingScreen}
+          options={{ 
+            headerShown: false,
+            animation: 'fade',
+          }}
+        />
+        <Stack.Screen 
+          name="Auth" 
+          component={AuthScreen}
+          options={{
+            headerShown: true,
+            title: 'Sign In',
+            ...Platform.select({
+              ios: {
+                headerLargeTitle: true,
+              },
+            }),
+          }}
+        />
+        <Stack.Screen 
+          name="Verification" 
+          component={VerificationScreen}
+          options={{
+            headerShown: true,
+            title: 'Verify',
+            ...Platform.select({
+              ios: {
+                headerLargeTitle: false,
+              },
+            }),
+          }}
+        />
+        <Stack.Screen 
+          name="Register" 
+          component={RegisterScreen}
+          options={{
+            headerShown: true,
+            title: 'Create Account',
+            ...Platform.select({
+              ios: {
+                headerLargeTitle: true,
+              },
+            }),
+          }}
+        />
       </Stack.Navigator>
     </>
   );
@@ -47,12 +114,14 @@ function AppNavigator() {
 
 export default function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider>
-        <NavigationContainer>
-          <AppNavigator />
-        </NavigationContainer>
-      </ThemeProvider>
-    </QueryClientProvider>
+    <SafeAreaProvider>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider>
+          <NavigationContainer>
+            <AppNavigator />
+          </NavigationContainer>
+        </ThemeProvider>
+      </QueryClientProvider>
+    </SafeAreaProvider>
   );
 }

@@ -1,16 +1,17 @@
 import React, { useEffect, useRef } from 'react';
-import { TouchableOpacity, Animated, StyleSheet, View } from 'react-native';
+import { TouchableOpacity, Animated, StyleSheet, View, Platform } from 'react-native';
 import { useTheme } from '../context/ThemeContext';
 
 export const ThemeToggle = () => {
-  const { isDark, toggleTheme } = useTheme();
+  const { isDark, toggleTheme, colors } = useTheme();
   const translateX = useRef(new Animated.Value(isDark ? 28 : 0)).current;
 
   useEffect(() => {
     Animated.spring(translateX, {
       toValue: isDark ? 28 : 0,
       useNativeDriver: true,
-      bounciness: 8,
+      bounciness: Platform.OS === 'ios' ? 4 : 8, // Less bouncy on iOS
+      speed: Platform.OS === 'ios' ? 12 : 8,
     }).start();
   }, [isDark]);
 
@@ -19,7 +20,20 @@ export const ThemeToggle = () => {
       onPress={toggleTheme}
       style={[
         styles.container,
-        { backgroundColor: isDark ? '#404040' : '#e4e4e7' }
+        { 
+          backgroundColor: isDark ? colors.iosSystemGray : colors.secondary,
+          ...Platform.select({
+            ios: {
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.1,
+              shadowRadius: 4,
+            },
+            android: {
+              elevation: 2,
+            },
+          }),
+        }
       ]}
       activeOpacity={0.8}
     >
@@ -27,8 +41,19 @@ export const ThemeToggle = () => {
         style={[
           styles.handle,
           {
-            backgroundColor: isDark ? '#ffffff' : '#000000',
+            backgroundColor: isDark ? colors.background : colors.text,
             transform: [{ translateX }],
+            ...Platform.select({
+              ios: {
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 1 },
+                shadowOpacity: 0.15,
+                shadowRadius: 2,
+              },
+              android: {
+                elevation: 4,
+              },
+            }),
           },
         ]}
       />
@@ -42,6 +67,7 @@ const styles = StyleSheet.create({
     height: 28,
     borderRadius: 14,
     padding: 2,
+    marginRight: Platform.OS === 'ios' ? 16 : 8,
   },
   handle: {
     width: 24,
