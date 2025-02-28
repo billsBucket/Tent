@@ -4,38 +4,41 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/hooks/use-auth";
-import { insertUserSchema } from "@shared/schema";
 import { MobileLayout } from "@/components/layout/mobile-layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
+import { ArrowLeft, Loader2, SmartphoneIcon } from "lucide-react";
+import { z } from "zod";
+
+const phoneSchema = z.object({
+  phoneNumber: z.string().min(10, "Please enter a valid phone number"),
+});
+
+const otpSchema = z.object({
+  otp: z.string().length(6, "Please enter the complete verification code"),
+});
 
 export default function AuthPage() {
   const [, setLocation] = useLocation();
-  const { user, loginMutation, registerMutation } = useAuth();
-  const [step, setStep] = useState<"login" | "register">("login");
+  const { user, loginMutation } = useAuth();
+  const [step, setStep] = useState<"phone" | "verify">("phone");
+  const [phoneNumber, setPhoneNumber] = useState("");
 
-  const loginForm = useForm({
-    resolver: zodResolver(insertUserSchema.pick({ username: true, password: true })),
+  const phoneForm = useForm({
+    resolver: zodResolver(phoneSchema),
     defaultValues: {
-      username: "",
-      password: "",
-    },
-  });
-
-  const registerForm = useForm({
-    resolver: zodResolver(insertUserSchema),
-    defaultValues: {
-      userType: "parent",
-      username: "",
-      password: "",
       phoneNumber: "",
-      fullName: "",
-      email: "",
     },
   });
 
+  const otpForm = useForm({
+    resolver: zodResolver(otpSchema),
+    defaultValues: {
+      otp: "",
+    },
+  });
 
   useEffect(() => {
     if (user) {
@@ -48,249 +51,165 @@ export default function AuthPage() {
     }
   }, [user, setLocation]);
 
-  const onLoginSubmit = loginForm.handleSubmit((data) => {
+  const onPhoneSubmit = phoneForm.handleSubmit(async (data) => {
+    setPhoneNumber(data.phoneNumber);
+    // TODO: Implement sending OTP
+    setStep("verify");
+  });
+
+  const onVerifySubmit = otpForm.handleSubmit(async (data) => {
     loginMutation.mutate({
-      username: data.username,
-      password: data.password,
+      phoneNumber,
+      otp: data.otp,
     });
   });
 
-  const onRegisterSubmit = registerForm.handleSubmit((data) => {
-    registerMutation.mutate(data);
-  });
-
-  if (user) return null;
-
   const renderStep = () => {
     switch (step) {
-      case "login":
+      case "phone":
         return (
-          <MobileLayout>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="min-h-screen bg-background p-4"
-            >
-              <div className="flex items-center mb-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="min-h-screen bg-background p-4"
+          >
+            <div className="flex items-center mb-8">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="-ml-3"
+                onClick={() => setLocation("/")}
+              >
+                <ArrowLeft className="h-5 w-5 mr-2" />
+                Back
+              </Button>
+            </div>
+
+            <div className="text-center mb-12">
+              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                <SmartphoneIcon className="h-8 w-8 text-primary" />
+              </div>
+              <h1 className="text-2xl font-semibold">Welcome back</h1>
+              <p className="text-muted-foreground mt-2">
+                Enter your phone number to continue
+              </p>
+            </div>
+
+            <Form {...phoneForm}>
+              <form onSubmit={onPhoneSubmit} className="space-y-6">
+                <FormField
+                  control={phoneForm.control}
+                  name="phoneNumber"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <div className="phone-input-container">
+                          <Input
+                            type="tel"
+                            placeholder="(555) 000-0000"
+                            className="h-12 px-4 rounded-lg text-lg text-center"
+                            {...field}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
                 <Button
-                  variant="ghost"
-                  size="sm"
-                  className="-ml-3"
-                  onClick={() => setLocation("/")}
+                  type="submit"
+                  className="w-full h-12 text-base font-medium rounded-full"
+                  disabled={phoneForm.formState.isSubmitting}
                 >
-                  <ArrowLeft className="h-5 w-5 mr-2" />
-                  Back
+                  {phoneForm.formState.isSubmitting && (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  )}
+                  Continue
                 </Button>
-              </div>
+              </form>
+            </Form>
+          </motion.div>
+        );
 
-              <div className="mb-8">
-                <h1 className="text-2xl font-semibold">Welcome back</h1>
-                <p className="text-muted-foreground mt-1">Sign in to your account</p>
-              </div>
+      case "verify":
+        return (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="min-h-screen bg-background p-4"
+          >
+            <div className="flex items-center mb-8">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="-ml-3"
+                onClick={() => setStep("phone")}
+              >
+                <ArrowLeft className="h-5 w-5 mr-2" />
+                Back
+              </Button>
+            </div>
 
-              <Form {...loginForm}>
-                <form onSubmit={onLoginSubmit} className="space-y-6">
-                  <FormField
-                    control={loginForm.control}
-                    name="username"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Input
-                            placeholder="Enter username"
-                            {...field}
-                            className="h-12 px-4 rounded-lg"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+            <div className="text-center mb-12">
+              <h1 className="text-2xl font-semibold">Verify your number</h1>
+              <p className="text-muted-foreground mt-2">
+                Enter the 6-digit code sent to {phoneNumber}
+              </p>
+            </div>
 
-                  <FormField
-                    control={loginForm.control}
-                    name="password"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Input
-                            type="password"
-                            placeholder="Enter password"
-                            {...field}
-                            className="h-12 px-4 rounded-lg"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+            <Form {...otpForm}>
+              <form onSubmit={onVerifySubmit} className="space-y-6">
+                <FormField
+                  control={otpForm.control}
+                  name="otp"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <InputOTP
+                          maxLength={6}
+                          value={field.value}
+                          onChange={field.onChange}
+                          className="gap-2 flex justify-center"
+                        >
+                          <InputOTPGroup>
+                            {Array.from({ length: 6 }).map((_, index) => (
+                              <InputOTPSlot key={index} index={index} />
+                            ))}
+                          </InputOTPGroup>
+                        </InputOTP>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
+                <div className="space-y-4">
                   <Button
                     type="submit"
-                    className="w-full h-12 text-base font-medium"
+                    className="w-full h-12 text-base font-medium rounded-full"
                     disabled={loginMutation.isPending}
                   >
                     {loginMutation.isPending && (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     )}
-                    Sign In
+                    Verify & Continue
                   </Button>
-
-                  <div className="text-center mt-4">
-                    <Button
-                      variant="link"
-                      className="text-sm text-muted-foreground"
-                      onClick={() => setStep("register")}
-                    >
-                      Don't have an account? Create one
-                    </Button>
-                  </div>
-                </form>
-              </Form>
-            </motion.div>
-          </MobileLayout>
-        );
-      case "register":
-        return (
-          <MobileLayout>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="flex flex-col min-h-[60vh] p-6 space-y-6"
-            >
-              <Button
-                variant="ghost"
-                className="w-fit -ml-2"
-                onClick={() => setStep("login")}
-              >
-                <ArrowLeft className="h-5 w-5 mr-2" />
-                Back
-              </Button>
-
-              <div className="space-y-2">
-                <h1 className="text-2xl font-bold">Create account</h1>
-                <p className="text-muted-foreground">
-                  Join BabySitterGo to get started
-                </p>
-              </div>
-
-              <Form {...registerForm}>
-                <form onSubmit={onRegisterSubmit} className="space-y-4">
-                  <FormField
-                    control={registerForm.control}
-                    name="userType"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>I am a</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select user type" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="parent">Parent</SelectItem>
-                            <SelectItem value="babysitter">Babysitter</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={registerForm.control}
-                    name="phoneNumber"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Phone Number</FormLabel>
-                        <FormControl>
-                          <div className="phone-input-container">
-                            <PhoneInput
-                              country={'us'}
-                              value={field.value}
-                              onChange={phone => field.onChange(phone)}
-                              enableSearch={true}
-                              inputClass="!w-full !h-10 !rounded-md !px-3 !py-2 !bg-background !border !border-input"
-                              buttonClass="!border !border-input !rounded-l-md !bg-background"
-                              dropdownClass="!bg-background !border !border-input"
-                              searchClass="!bg-background !text-foreground"
-                            />
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={registerForm.control}
-                    name="fullName"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Full Name</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Enter your full name" {...field} className="h-12 px-4 rounded-lg"/>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={registerForm.control}
-                    name="username"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Username</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Choose a username" {...field} className="h-12 px-4 rounded-lg"/>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={registerForm.control}
-                    name="password"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Password</FormLabel>
-                        <FormControl>
-                          <Input type="password" placeholder="Create a password" {...field} className="h-12 px-4 rounded-lg"/>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
 
                   <Button
-                    type="submit"
-                    className="w-full h-12 text-lg mt-6"
-                    disabled={registerMutation.isPending}
+                    type="button"
+                    variant="link"
+                    className="w-full text-sm text-muted-foreground"
+                    onClick={() => setStep("phone")}
                   >
-                    {registerMutation.isPending && (
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    )}
-                    Create Account
+                    Didn't receive code? Try again
                   </Button>
-                </form>
-              </Form>
-
-              <div className="text-center mt-4">
-                <Button
-                  variant="link"
-                  className="text-sm text-muted-foreground"
-                  onClick={() => setStep("login")}
-                >
-                  Already have an account? Sign in
-                </Button>
-              </div>
-            </motion.div>
-          </MobileLayout>
+                </div>
+              </form>
+            </Form>
+          </motion.div>
         );
     }
   };
