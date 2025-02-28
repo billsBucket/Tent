@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { MobileLayout } from "@/components/layout/mobile-layout";
-import { Shield, Heart, UserCheck, ChevronRight, X } from "lucide-react";
+import { Shield, Heart, UserCheck, ChevronRight } from "lucide-react";
 
 const slides = [
   {
@@ -38,40 +37,48 @@ export default function OnboardingPage() {
   const skipOnboarding = () => setLocation("/auth");
 
   return (
-    <MobileLayout className="flex flex-col bg-black">
-      <div className="flex justify-between items-center mb-8">
+    <div className="fixed inset-0 bg-black flex flex-col min-h-screen">
+      {/* Header with Logo and Skip */}
+      <div className="flex justify-between items-center px-6 py-4">
         <img 
           src="/logo-with-name.png" 
           alt="Tent Logo" 
-          className="h-8"
+          className="h-5" // Further reduced logo size
         />
-        <Button variant="ghost" size="sm" onClick={skipOnboarding} className="text-white">
-          <X className="h-4 w-4 mr-2" />
+        <Button 
+          variant="outline" 
+          onClick={skipOnboarding} 
+          className="text-white border-white/20 hover:bg-white/10"
+          size="sm"
+        >
           Skip
+          <ChevronRight className="h-4 w-4 ml-1" />
         </Button>
       </div>
 
-      <AnimatePresence mode="wait">
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col items-center justify-center text-center px-6">
         <motion.div
           key={currentSlide}
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -20 }}
-          className="flex-1 flex flex-col items-center justify-center text-center px-4"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          className="space-y-6"
         >
           {slides.map((slide, index) => (
             currentSlide === index && (
               <div key={index} className="space-y-6">
                 <slide.icon className="h-16 w-16 mx-auto mb-6 text-white" />
                 <h2 className="text-2xl font-bold text-white">{slide.title}</h2>
-                <p className="text-gray-400">{slide.description}</p>
+                <p className="text-gray-400 max-w-sm mx-auto">{slide.description}</p>
               </div>
             )
           ))}
         </motion.div>
-      </AnimatePresence>
+      </div>
 
-      <div className="mt-8 space-y-4">
+      {/* Bottom Navigation */}
+      <div className="px-6 pb-8 space-y-6">
         <div className="flex justify-center space-x-2">
           {slides.map((_, index) => (
             <div
@@ -83,11 +90,15 @@ export default function OnboardingPage() {
           ))}
         </div>
 
-        <Button className="w-full bg-white text-black hover:bg-gray-100" onClick={nextSlide}>
+        <Button 
+          className="w-full bg-white text-black hover:bg-gray-100" 
+          size="lg"
+          onClick={nextSlide}
+        >
           {currentSlide === slides.length - 1 ? "Get Started" : "Next"}
           <ChevronRight className="h-4 w-4 ml-2" />
         </Button>
       </div>
-    </MobileLayout>
+    </div>
   );
 }
