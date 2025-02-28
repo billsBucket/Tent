@@ -5,10 +5,6 @@ import { StatusBar, Platform } from 'react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-// Import theme components
-import { ThemeProvider, useTheme } from './src/context/ThemeContext';
-import { ThemeToggle } from './src/components/ThemeToggle';
-
 // Import screens
 import OnboardingScreen from './src/screens/OnboardingScreen';
 import AuthScreen from './src/screens/AuthScreen';
@@ -19,6 +15,11 @@ import NotificationsScreen from './src/screens/NotificationsScreen';
 import MessagesScreen from './src/screens/MessagesScreen';
 import SettingsScreen from './src/screens/SettingsScreen';
 import TrackingScreen from './src/screens/booking/TrackingScreen';
+import RecommendationsScreen from './src/screens/RecommendationsScreen';
+
+// Import theme components
+import { ThemeProvider, useTheme } from './src/context/ThemeContext';
+import { ThemeToggle } from './src/components/ThemeToggle';
 
 const Stack = createNativeStackNavigator();
 const queryClient = new QueryClient();
@@ -141,6 +142,14 @@ function AppNavigator() {
           options={{
             title: 'Track Booking',
             headerShown: true,
+          }}
+        />
+        <Stack.Screen
+          name="Recommendations"
+          component={RecommendationsScreen}
+          options={{
+            title: 'AI Recommendations',
+            headerShown: false,
           }}
         />
       </Stack.Navigator>
