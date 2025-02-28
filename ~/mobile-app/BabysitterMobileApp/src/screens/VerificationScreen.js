@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTheme } from '../context/ThemeContext';
+import Icon from 'react-native-vector-icons/Feather';
 
 const OTP_LENGTH = 6;
 
@@ -19,13 +20,40 @@ export default function VerificationScreen() {
   const { colors } = useTheme();
   const { phoneNumber } = route.params;
   const [code, setCode] = useState('');
+  const [error, setError] = useState('');
   const inputRefs = useRef([]);
+
+  useEffect(() => {
+    // Auto focus first input on mount
+    inputRefs.current[0]?.focus();
+  }, []);
+
+  useEffect(() => {
+    // Check code length and validate when complete
+    if (code.length === OTP_LENGTH) {
+      validateCode(code);
+    }
+  }, [code]);
+
+  const validateCode = async (verificationCode) => {
+    try {
+      // TODO: Implement actual verification logic
+      if (verificationCode === '123456') { // Mock validation
+        navigation.navigate('Register');
+      } else {
+        setError('Please enter the complete verification code');
+      }
+    } catch (err) {
+      setError('Invalid verification code. Please try again.');
+    }
+  };
 
   const handleCodeChange = (text, index) => {
     const newCode = code.split('');
     newCode[index] = text;
     const updatedCode = newCode.join('');
     setCode(updatedCode);
+    setError(''); // Clear error when user types
 
     // Auto-focus next input
     if (text && index < OTP_LENGTH - 1) {
@@ -39,14 +67,23 @@ export default function VerificationScreen() {
     }
   };
 
-  const handleVerify = () => {
-    if (code.length === OTP_LENGTH) {
-      navigation.navigate('Register');
-    }
+  const handleResendCode = () => {
+    // TODO: Implement resend code logic
+    setCode('');
+    setError('');
+    inputRefs.current[0]?.focus();
   };
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={() => navigation.goBack()}
+      >
+        <Icon name="arrow-left" size={24} color={colors.text} />
+        <Text style={[styles.backText, { color: colors.text }]}>Back</Text>
+      </TouchableOpacity>
+
       <View style={styles.content}>
         <Text style={[styles.title, { color: colors.text }]}>
           Verify your number
@@ -64,7 +101,7 @@ export default function VerificationScreen() {
                 style={[
                   styles.otpInput,
                   {
-                    borderColor: colors.border,
+                    borderColor: error ? colors.destructive : colors.border,
                     color: colors.text,
                     backgroundColor: colors.background,
                   }
@@ -79,23 +116,17 @@ export default function VerificationScreen() {
             ))}
           </View>
 
-          <TouchableOpacity
-            style={[
-              styles.button,
-              code.length !== OTP_LENGTH && styles.buttonDisabled,
-              { backgroundColor: colors.primary }
-            ]}
-            onPress={handleVerify}
-            disabled={code.length !== OTP_LENGTH}
-          >
-            <Text style={styles.buttonText}>Verify & Continue</Text>
-          </TouchableOpacity>
+          {error ? (
+            <Text style={[styles.errorText, { color: colors.destructive }]}>
+              {error}
+            </Text>
+          ) : null}
 
           <TouchableOpacity
-            style={styles.linkButton}
-            onPress={() => navigation.goBack()}
+            style={styles.resendContainer}
+            onPress={handleResendCode}
           >
-            <Text style={[styles.linkText, { color: colors.placeholder }]}>
+            <Text style={[styles.resendText, { color: colors.placeholder }]}>
               Didn't receive code? Try again
             </Text>
           </TouchableOpacity>
@@ -109,9 +140,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  backButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+  },
+  backText: {
+    fontSize: 16,
+    marginLeft: 8,
+  },
   content: {
     flex: 1,
-    padding: 16,
+    paddingHorizontal: 16,
     alignItems: 'center',
   },
   title: {
@@ -128,10 +168,11 @@ const styles = StyleSheet.create({
   inputContainer: {
     width: '100%',
     maxWidth: 400,
+    alignItems: 'center',
   },
   otpContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     marginBottom: 24,
   },
   otpInput: {
@@ -141,48 +182,18 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     fontSize: 24,
     textAlign: 'center',
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.1,
-        shadowRadius: 2,
-      },
-      android: {
-        elevation: 1,
-      },
-    }),
+    marginHorizontal: 4,
   },
-  button: {
-    borderRadius: 24,
-    padding: 16,
-    alignItems: 'center',
-    marginTop: 16,
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-      },
-      android: {
-        elevation: 2,
-      },
-    }),
-  },
-  buttonDisabled: {
-    opacity: 0.5,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: Platform.OS === 'ios' ? '600' : 'bold',
-  },
-  linkButton: {
-    padding: 16,
-    alignItems: 'center',
-  },
-  linkText: {
+  errorText: {
     fontSize: 14,
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  resendContainer: {
+    marginTop: 24,
+  },
+  resendText: {
+    fontSize: 14,
+    textDecorationLine: 'underline',
   },
 });
