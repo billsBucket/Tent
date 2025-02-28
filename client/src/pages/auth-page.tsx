@@ -25,6 +25,7 @@ export default function AuthPage() {
   const [, setLocation] = useLocation();
   const { user, loginMutation } = useAuth();
   const [step, setStep] = useState<"phone" | "verify">("phone");
+  const [isNewUser, setIsNewUser] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState("");
 
   const phoneForm = useForm({
@@ -91,9 +92,11 @@ export default function AuthPage() {
               <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
                 <SmartphoneIcon className="h-8 w-8 text-primary" />
               </div>
-              <h1 className="text-2xl font-semibold">Welcome back</h1>
+              <h1 className="text-2xl font-semibold">
+                {isNewUser ? "Create Account" : "Welcome back"}
+              </h1>
               <p className="text-muted-foreground mt-2">
-                Enter your phone number to continue
+                Enter your phone number to {isNewUser ? "get started" : "continue"}
               </p>
             </div>
 
@@ -122,7 +125,7 @@ export default function AuthPage() {
                   )}
                 />
 
-                <div className="w-full max-w-[400px] mx-auto">
+                <div className="w-full max-w-[400px] mx-auto space-y-4">
                   <Button
                     type="submit"
                     className="w-full h-12 text-base font-medium rounded-full"
@@ -133,6 +136,19 @@ export default function AuthPage() {
                     )}
                     Continue
                   </Button>
+
+                  <div className="text-center">
+                    <Button
+                      type="button"
+                      variant="link"
+                      onClick={() => setIsNewUser(!isNewUser)}
+                      className="text-sm text-muted-foreground"
+                    >
+                      {isNewUser
+                        ? "Already have an account? Sign in"
+                        : "Don't have an account? Create one"}
+                    </Button>
+                  </div>
                 </div>
               </form>
             </Form>
