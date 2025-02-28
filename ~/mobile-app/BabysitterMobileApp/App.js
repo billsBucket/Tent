@@ -5,15 +5,15 @@ import { StatusBar, Platform } from 'react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+// Import theme components
+import { ThemeProvider, useTheme } from './src/context/ThemeContext';
+import { ThemeToggle } from './src/components/ThemeToggle';
+
 // Import screens
 import OnboardingScreen from './src/screens/OnboardingScreen';
 import AuthScreen from './src/screens/AuthScreen';
 import VerificationScreen from './src/screens/VerificationScreen';
 import RegisterScreen from './src/screens/RegisterScreen';
-
-// Import theme components
-import { ThemeProvider, useTheme } from './src/context/ThemeContext';
-import { ThemeToggle } from './src/components/ThemeToggle';
 
 const Stack = createNativeStackNavigator();
 const queryClient = new QueryClient();
