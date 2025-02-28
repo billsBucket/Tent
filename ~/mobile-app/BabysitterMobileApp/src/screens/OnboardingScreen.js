@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -6,36 +6,118 @@ import {
   TouchableOpacity,
   SafeAreaView,
   Platform,
+  Dimensions,
+  Animated,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../context/ThemeContext';
+import Icon from 'react-native-vector-icons/Feather';
+
+const { width } = Dimensions.get('window');
+
+const slides = [
+  {
+    title: "Secure Bookings",
+    description: "Book trusted babysitters with confidence through our secure platform",
+    icon: "shield",
+  },
+  {
+    title: "Verified Sitters",
+    description: "All babysitters are verified with government ID and face validation",
+    icon: "user-check",
+  },
+  {
+    title: "Family First",
+    description: "Create detailed profiles for your family's specific needs",
+    icon: "heart",
+  },
+];
 
 export default function OnboardingScreen() {
   const navigation = useNavigation();
   const { colors } = useTheme();
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const slideAnim = new Animated.Value(0);
+
+  const nextSlide = () => {
+    if (currentSlide < slides.length - 1) {
+      Animated.timing(slideAnim, {
+        toValue: -width,
+        duration: 300,
+        useNativeDriver: true,
+      }).start(() => {
+        slideAnim.setValue(0);
+        setCurrentSlide(curr => curr + 1);
+      });
+    } else {
+      navigation.navigate('Auth');
+    }
+  };
+
+  const skipOnboarding = () => navigation.navigate('Auth');
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-      <View style={styles.content}>
-        <View style={[styles.iconContainer, { backgroundColor: colors.secondary }]}>
-          {/* TODO: Add app logo */}
+      <View style={styles.header}>
+        <View style={styles.logoContainer}>
+          {/* Logo will be added here */}
         </View>
-        
-        <Text style={[styles.title, { color: colors.text }]}>
-          Welcome to BabySitterGo
-        </Text>
-        <Text style={[styles.subtitle, { color: colors.placeholder }]}>
-          Find trusted babysitters in your area
-        </Text>
+        <TouchableOpacity 
+          onPress={skipOnboarding}
+          style={styles.skipButton}
+        >
+          <Text style={[styles.skipText, { color: colors.text }]}>Skip</Text>
+        </TouchableOpacity>
+      </View>
 
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={[styles.button, { backgroundColor: colors.primary }]}
-            onPress={() => navigation.navigate('Auth')}
-          >
-            <Text style={styles.buttonText}>Get Started</Text>
-          </TouchableOpacity>
+      <Animated.View 
+        style={[
+          styles.slideContainer,
+          {
+            transform: [{ translateX: slideAnim }]
+          }
+        ]}
+      >
+        <View style={styles.slide}>
+          <Icon 
+            name={slides[currentSlide].icon} 
+            size={80} 
+            color={colors.primary}
+            style={styles.icon}
+          />
+          <Text style={[styles.title, { color: colors.text }]}>
+            {slides[currentSlide].title}
+          </Text>
+          <Text style={[styles.description, { color: colors.placeholder }]}>
+            {slides[currentSlide].description}
+          </Text>
         </View>
+      </Animated.View>
+
+      <View style={styles.footer}>
+        <View style={styles.pagination}>
+          {slides.map((_, index) => (
+            <View
+              key={index}
+              style={[
+                styles.paginationDot,
+                {
+                  backgroundColor: index === currentSlide ? colors.primary : colors.border,
+                }
+              ]}
+            />
+          ))}
+        </View>
+
+        <TouchableOpacity
+          style={[styles.button, { backgroundColor: colors.primary }]}
+          onPress={nextSlide}
+        >
+          <Text style={styles.buttonText}>
+            {currentSlide === slides.length - 1 ? "Get Started" : "Next"}
+          </Text>
+          <Icon name="chevron-right" size={20} color="#FFF" style={styles.buttonIcon} />
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
@@ -45,51 +127,65 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  content: {
-    flex: 1,
-    padding: 20,
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingTop: 20,
+  },
+  logoContainer: {
+    width: 100,
+    height: 40,
+  },
+  skipButton: {
+    padding: 10,
+  },
+  skipText: {
+    fontSize: 16,
+  },
+  slideContainer: {
+    flex: 1,
     justifyContent: 'center',
   },
-  iconContainer: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    marginBottom: 32,
+  slide: {
     alignItems: 'center',
-    justifyContent: 'center',
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-      },
-      android: {
-        elevation: 4,
-      },
-    }),
+    paddingHorizontal: 40,
+  },
+  icon: {
+    marginBottom: 30,
   },
   title: {
     fontSize: 28,
-    fontWeight: Platform.OS === 'ios' ? '700' : 'bold',
-    marginBottom: 12,
+    fontWeight: 'bold',
     textAlign: 'center',
+    marginBottom: 10,
   },
-  subtitle: {
-    fontSize: 18,
+  description: {
+    fontSize: 16,
     textAlign: 'center',
-    marginBottom: 48,
+    lineHeight: 24,
   },
-  buttonContainer: {
-    width: '100%',
-    paddingHorizontal: 20,
+  footer: {
+    padding: 20,
+  },
+  pagination: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginBottom: 20,
+  },
+  paginationDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    marginHorizontal: 4,
   },
   button: {
-    borderRadius: 30,
-    height: 56,
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    padding: 16,
+    borderRadius: 30,
     ...Platform.select({
       ios: {
         shadowColor: '#000',
@@ -103,8 +199,12 @@ const styles = StyleSheet.create({
     }),
   },
   buttonText: {
-    color: '#fff',
+    color: '#FFF',
     fontSize: 18,
-    fontWeight: Platform.OS === 'ios' ? '600' : 'bold',
+    fontWeight: 'bold',
+    marginRight: 8,
+  },
+  buttonIcon: {
+    marginLeft: 4,
   },
 });

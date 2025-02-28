@@ -14,6 +14,7 @@ import OnboardingScreen from './src/screens/OnboardingScreen';
 import AuthScreen from './src/screens/AuthScreen';
 import VerificationScreen from './src/screens/VerificationScreen';
 import RegisterScreen from './src/screens/RegisterScreen';
+import DashboardScreen from './src/screens/DashboardScreen';
 
 const Stack = createNativeStackNavigator();
 const queryClient = new QueryClient();
@@ -102,6 +103,15 @@ function AppNavigator() {
                 headerLargeTitle: true,
               },
             }),
+          }}
+        />
+        <Stack.Screen 
+          name="Dashboard" 
+          component={DashboardScreen}
+          options={{
+            title: 'Home',
+            headerLeft: null,
+            gestureEnabled: false,
           }}
         />
       </Stack.Navigator>
