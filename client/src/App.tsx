@@ -22,6 +22,7 @@ import BabysitterHelp from "@/pages/babysitter/help";
 import BabysitterNotifications from "@/pages/babysitter/notifications";
 import BabysitterMessages from "@/pages/babysitter/messages";
 import BabysitterEarnings from "@/pages/babysitter/earnings";
+import BabysitterSchedule from "@/pages/babysitter/schedule";
 import BookingPage from "@/pages/parent/booking/[id]";
 import BookingTrackingPage from "@/pages/parent/booking/[id]/tracking";
 
@@ -47,6 +48,7 @@ function Router() {
       <ProtectedRoute path="/babysitter/notifications" component={BabysitterNotifications} />
       <ProtectedRoute path="/babysitter/messages" component={BabysitterMessages} />
       <ProtectedRoute path="/babysitter/earnings" component={BabysitterEarnings} />
+      <ProtectedRoute path="/babysitter/schedule" component={BabysitterSchedule} />
       <Route component={NotFound} />
     </Switch>
   );
