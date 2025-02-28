@@ -5,11 +5,10 @@ import {
   StyleSheet,
   SafeAreaView,
   TouchableOpacity,
+  TextInput,
   Platform,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import PhoneInput from 'react-native-phone-number-input';
-import OTPInputView from '@twotalltotems/react-native-otp-input';
 import { useAuth } from '../hooks/useAuth';
 
 type Step = 'phone' | 'verify' | 'register';
@@ -60,12 +59,12 @@ export default function AuthScreen() {
         </Text>
 
         <View style={styles.inputContainer}>
-          <PhoneInput
-            defaultCode="US"
-            layout="first"
-            onChangeFormattedText={setPhoneNumber}
-            containerStyle={styles.phoneInput}
-            textContainerStyle={styles.phoneInputText}
+          <TextInput
+            style={styles.input}
+            placeholder="(555) 000-0000"
+            keyboardType="phone-pad"
+            value={phoneNumber}
+            onChangeText={setPhoneNumber}
           />
 
           <TouchableOpacity
@@ -108,18 +107,13 @@ export default function AuthScreen() {
         </Text>
 
         <View style={styles.inputContainer}>
-          <OTPInputView
-            style={styles.otpInput}
-            pinCount={6}
-            onCodeFilled={handleVerifySubmit}
-            autoFocusOnLoad
-            codeInputFieldStyle={styles.otpField}
-            codeInputHighlightStyle={styles.otpFieldFocused}
-          />
+          <View style={styles.otpContainer}>
+            {/* TODO: Add OTP Input */}
+          </View>
 
           <TouchableOpacity
             style={styles.button}
-            onPress={() => {/* TODO: Resend code */}}
+            onPress={() => handleVerifySubmit("123456")}
           >
             <Text style={styles.buttonText}>Verify & Continue</Text>
           </TouchableOpacity>
@@ -137,20 +131,9 @@ export default function AuthScreen() {
     </View>
   );
 
-  const renderStep = () => {
-    switch (step) {
-      case 'phone':
-        return renderPhoneStep();
-      case 'verify':
-        return renderVerifyStep();
-      default:
-        return null;
-    }
-  };
-
   return (
     <SafeAreaView style={styles.safeArea}>
-      {renderStep()}
+      {step === 'phone' ? renderPhoneStep() : renderVerifyStep()}
     </SafeAreaView>
   );
 }
@@ -201,12 +184,14 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: 400,
   },
-  phoneInput: {
-    width: '100%',
+  input: {
+    height: 48,
+    borderWidth: 1,
+    borderColor: '#e4e4e7',
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    fontSize: 16,
     marginBottom: 16,
-  },
-  phoneInputText: {
-    backgroundColor: '#f4f4f5',
   },
   button: {
     backgroundColor: '#000',
@@ -228,18 +213,9 @@ const styles = StyleSheet.create({
     color: '#71717a',
     fontSize: 14,
   },
-  otpInput: {
-    width: '100%',
-    height: 50,
-    marginBottom: 16,
-  },
-  otpField: {
-    backgroundColor: '#f4f4f5',
-    borderRadius: 8,
-    color: '#000',
-  },
-  otpFieldFocused: {
-    borderColor: '#000',
-    borderWidth: 2,
+  otpContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 24,
   },
 });
