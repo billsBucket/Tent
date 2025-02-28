@@ -25,7 +25,7 @@ export default function SplashScreen() {
         <motion.img 
           src="/logo.png"
           alt="BabySitterGo Logo"
-          className="w-48 h-48 md:w-56 md:h-56" 
+          className="w-64 h-64 md:w-80 md:h-80" 
           animate={{ 
             y: [0, -20, 0],
             scale: [1, 1.1, 1]
