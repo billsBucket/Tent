@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { MobileLayout } from "@/components/layout/mobile-layout";
-import { Shield, Heart, UserCheck, ChevronRight, X } from "lucide-react";
+import { Shield, Heart, UserCheck, ChevronRight } from "lucide-react";
 
 const slides = [
   {
@@ -42,11 +42,15 @@ export default function OnboardingPage() {
       <div className="flex justify-between items-center mb-8">
         <img 
           src="/logo-with-name.png" 
-          alt="Tent Logo" 
+          alt="Logo" 
           className="h-8"
         />
-        <Button variant="ghost" size="sm" onClick={skipOnboarding} className="text-white">
-          <X className="h-4 w-4 mr-2" />
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          onClick={skipOnboarding} 
+          className="text-white"
+        >
           Skip
         </Button>
       </div>
@@ -71,7 +75,7 @@ export default function OnboardingPage() {
         </motion.div>
       </AnimatePresence>
 
-      <div className="mt-8 space-y-4">
+      <div className="mt-8 space-y-4 px-4">
         <div className="flex justify-center space-x-2">
           {slides.map((_, index) => (
             <div
@@ -83,10 +87,15 @@ export default function OnboardingPage() {
           ))}
         </div>
 
-        <Button className="w-full bg-white text-black hover:bg-gray-100" onClick={nextSlide}>
-          {currentSlide === slides.length - 1 ? "Get Started" : "Next"}
-          <ChevronRight className="h-4 w-4 ml-2" />
-        </Button>
+        <div className="flex justify-center">
+          <Button 
+            className="w-[200px] bg-white text-black hover:bg-gray-100 rounded-full h-12" 
+            onClick={nextSlide}
+          >
+            {currentSlide === slides.length - 1 ? "Get Started" : "Next"}
+            <ChevronRight className="h-4 w-4 ml-2" />
+          </Button>
+        </div>
       </div>
     </MobileLayout>
   );
