@@ -24,12 +24,12 @@ export default function VerificationScreen() {
   const inputRefs = useRef([]);
 
   useEffect(() => {
-    // Auto focus first input on mount
+    // Auto focus first input
     inputRefs.current[0]?.focus();
   }, []);
 
   useEffect(() => {
-    // Check code length and validate when complete
+    // Validate code automatically when complete
     if (code.length === OTP_LENGTH) {
       validateCode(code);
     }
@@ -38,7 +38,7 @@ export default function VerificationScreen() {
   const validateCode = async (verificationCode) => {
     try {
       // TODO: Implement actual verification logic
-      if (verificationCode === '123456') { // Mock validation
+      if (verificationCode === '123456') {
         navigation.navigate('Register');
       } else {
         setError('Please enter the complete verification code');
@@ -53,7 +53,7 @@ export default function VerificationScreen() {
     newCode[index] = text;
     const updatedCode = newCode.join('');
     setCode(updatedCode);
-    setError(''); // Clear error when user types
+    setError('');
 
     // Auto-focus next input
     if (text && index < OTP_LENGTH - 1) {
@@ -81,57 +81,52 @@ export default function VerificationScreen() {
         onPress={() => navigation.goBack()}
       >
         <Icon name="arrow-left" size={24} color={colors.text} />
-        <Text style={[styles.backText, { color: colors.text }]}>Back</Text>
       </TouchableOpacity>
 
-      <View style={styles.content}>
-        <Text style={[styles.title, { color: colors.text }]}>
-          Verify your number
-        </Text>
-        <Text style={[styles.subtitle, { color: colors.placeholder }]}>
-          Enter the 6-digit code sent to {phoneNumber}
-        </Text>
+      <Text style={[styles.title, { color: colors.text }]}>
+        Verify your number
+      </Text>
+      <Text style={[styles.subtitle, { color: colors.placeholder }]}>
+        Enter the 6-digit code sent to {phoneNumber}
+      </Text>
 
-        <View style={styles.inputContainer}>
-          <View style={styles.otpContainer}>
-            {[...Array(OTP_LENGTH)].map((_, index) => (
-              <TextInput
-                key={index}
-                ref={ref => inputRefs.current[index] = ref}
-                style={[
-                  styles.otpInput,
-                  {
-                    borderColor: error ? colors.destructive : colors.border,
-                    color: colors.text,
-                    backgroundColor: colors.background,
-                  }
-                ]}
-                maxLength={1}
-                keyboardType="number-pad"
-                onChangeText={text => handleCodeChange(text, index)}
-                onKeyPress={e => handleKeyPress(e, index)}
-                value={code[index] || ''}
-                selectionColor={colors.primary}
-              />
-            ))}
-          </View>
-
-          {error ? (
-            <Text style={[styles.errorText, { color: colors.destructive }]}>
-              {error}
-            </Text>
-          ) : null}
-
-          <TouchableOpacity
-            style={styles.resendContainer}
-            onPress={handleResendCode}
-          >
-            <Text style={[styles.resendText, { color: colors.placeholder }]}>
-              Didn't receive code? Try again
-            </Text>
-          </TouchableOpacity>
-        </View>
+      <View style={styles.codeContainer}>
+        {[...Array(OTP_LENGTH)].map((_, index) => (
+          <TextInput
+            key={index}
+            ref={ref => inputRefs.current[index] = ref}
+            style={[
+              styles.codeInput,
+              {
+                borderColor: error ? colors.destructive : colors.border,
+                color: colors.text,
+                backgroundColor: colors.background,
+              }
+            ]}
+            maxLength={1}
+            keyboardType="number-pad"
+            onChangeText={text => handleCodeChange(text, index)}
+            onKeyPress={e => handleKeyPress(e, index)}
+            value={code[index] || ''}
+            selectionColor={colors.primary}
+          />
+        ))}
       </View>
+
+      {error ? (
+        <Text style={[styles.errorText, { color: colors.destructive }]}>
+          {error}
+        </Text>
+      ) : null}
+
+      <TouchableOpacity
+        style={styles.tryAgainButton}
+        onPress={handleResendCode}
+      >
+        <Text style={[styles.tryAgainText, { color: colors.placeholder }]}>
+          Didn't receive code? Try again
+        </Text>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 }
@@ -139,43 +134,34 @@ export default function VerificationScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    alignItems: 'center',
+    paddingHorizontal: 20,
   },
   backButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 16,
-  },
-  backText: {
-    fontSize: 16,
-    marginLeft: 8,
-  },
-  content: {
-    flex: 1,
-    paddingHorizontal: 16,
-    alignItems: 'center',
+    position: 'absolute',
+    top: Platform.OS === 'ios' ? 60 : 20,
+    left: 20,
+    zIndex: 1,
   },
   title: {
     fontSize: 24,
-    fontWeight: Platform.OS === 'ios' ? '600' : 'bold',
+    fontWeight: 'bold',
+    marginTop: Platform.OS === 'ios' ? 100 : 60,
     marginBottom: 8,
-    textAlign: 'center',
   },
   subtitle: {
     fontSize: 16,
     textAlign: 'center',
-    marginBottom: 32,
+    marginBottom: 40,
   },
-  inputContainer: {
-    width: '100%',
-    maxWidth: 400,
-    alignItems: 'center',
-  },
-  otpContainer: {
+  codeContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
     marginBottom: 24,
   },
-  otpInput: {
+  codeInput: {
     width: 45,
     height: 45,
     borderWidth: 1,
@@ -186,13 +172,14 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: 14,
-    marginBottom: 16,
+    marginBottom: 24,
     textAlign: 'center',
   },
-  resendContainer: {
-    marginTop: 24,
+  tryAgainButton: {
+    position: 'absolute',
+    bottom: Platform.OS === 'ios' ? 50 : 30,
   },
-  resendText: {
+  tryAgainText: {
     fontSize: 14,
     textDecorationLine: 'underline',
   },
