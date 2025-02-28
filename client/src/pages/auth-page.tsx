@@ -6,11 +6,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/hooks/use-auth";
 import { MobileLayout } from "@/components/layout/mobile-layout";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { ArrowLeft, Loader2, SmartphoneIcon } from "lucide-react";
 import { z } from "zod";
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css';
 
 const phoneSchema = z.object({
   phoneNumber: z.string().min(10, "Please enter a valid phone number"),
@@ -104,12 +105,15 @@ export default function AuthPage() {
                   render={({ field }) => (
                     <FormItem>
                       <FormControl>
-                        <div className="phone-input-container">
-                          <Input
-                            type="tel"
+                        <div className="phone-input-container w-full max-w-[400px] mx-auto">
+                          <PhoneInput
+                            country={'us'}
+                            value={field.value}
+                            onChange={phone => field.onChange(phone)}
+                            containerClass="w-full"
+                            inputClass="!w-full !h-12 !text-lg !pl-[72px]"
+                            buttonClass="!h-12 !w-[60px]"
                             placeholder="(555) 000-0000"
-                            className="h-12 px-4 rounded-lg text-lg text-center"
-                            {...field}
                           />
                         </div>
                       </FormControl>
@@ -118,16 +122,18 @@ export default function AuthPage() {
                   )}
                 />
 
-                <Button
-                  type="submit"
-                  className="w-full h-12 text-base font-medium rounded-full"
-                  disabled={phoneForm.formState.isSubmitting}
-                >
-                  {phoneForm.formState.isSubmitting && (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  )}
-                  Continue
-                </Button>
+                <div className="w-full max-w-[400px] mx-auto">
+                  <Button
+                    type="submit"
+                    className="w-full h-12 text-base font-medium rounded-full"
+                    disabled={phoneForm.formState.isSubmitting}
+                  >
+                    {phoneForm.formState.isSubmitting && (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    )}
+                    Continue
+                  </Button>
+                </div>
               </form>
             </Form>
           </motion.div>
@@ -186,7 +192,7 @@ export default function AuthPage() {
                   )}
                 />
 
-                <div className="space-y-4">
+                <div className="space-y-4 w-full max-w-[400px] mx-auto">
                   <Button
                     type="submit"
                     className="w-full h-12 text-base font-medium rounded-full"

@@ -14,11 +14,15 @@
 
 /* Phone Input Custom Styles */
 .phone-input-container .react-tel-input .form-control {
-  @apply w-full h-10 rounded-md px-3 py-2 bg-background border border-input text-foreground;
+  @apply w-full h-12 rounded-lg px-3 py-2 bg-background border border-input text-foreground text-lg;
 }
 
 .phone-input-container .react-tel-input .flag-dropdown {
-  @apply border border-input rounded-l-md bg-background;
+  @apply border border-input rounded-l-lg bg-background h-12;
+}
+
+.phone-input-container .react-tel-input .selected-flag {
+  @apply bg-transparent h-[46px] rounded-l-lg;
 }
 
 .phone-input-container .react-tel-input .selected-flag:hover,
@@ -37,4 +41,12 @@
 
 .phone-input-container .react-tel-input .country-list .country.highlight {
   @apply bg-accent;
+}
+
+.phone-input-container .react-tel-input .search-box {
+  @apply bg-background text-foreground border border-input;
+}
+
+.phone-input-container .react-tel-input .search-box:hover {
+  @apply border-input;
 }
